@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  contact-service / pom.xml
+  [무엇을] 문의(Contact) 접수 + 알림 연동 서비스. 독립 배포 단위.
+  [왜/MSA] auth-service와 동일하게 자기 pom/포트/스키마를 가진 독립 서비스.
+           auth와 달리 Security starter가 필요 없다(인증은 게이트웨이가 이미 처리, 헤더만 신뢰).
+  [auth와 차이] spring-boot-starter-security 제외, RestTemplate으로 notification 호출 추가.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.kmsa</groupId>
+    <artifactId>contact-service</artifactId>
+    <version>1.0.0</version>
+    <name>contact-service</name>
+    <description>문의 접수 + 알림 연동 서비스</description>
+    <properties><java.version>17</java.version></properties>
+
+    <dependencies>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
+        <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
+        <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>test</scope></dependency>
+    </dependencies>
+
+    <build><plugins>
+        <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin>
+    </plugins></build>
+</project>

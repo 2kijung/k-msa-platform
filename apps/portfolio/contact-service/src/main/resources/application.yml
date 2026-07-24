@@ -1,0 +1,46 @@
+# contact-service / application.yml
+# [왜/MSA] 자기 포트(8085) + 자기 스키마(contact). auth-service(8081/auth)와 완전 분리.
+server:
+  port: 8085
+spring:
+  application:
+    name: contact-service
+  # [왜] 개발도 실물 PostgreSQL(dev-prod parity). auth-service와 같은 kmsa 인스턴스, 스키마만 contact로 격리.
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kmsa}?currentSchema=contact
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:kmsa}
+    password: ${DB_PASSWORD:kmsa1234}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: contact   # [왜/MSA] contact-service는 contact 스키마만 본다(데이터 격리)
+
+# [왜/MSA] 알림은 별도 서비스(notification)를 REST로 호출 → 서비스 간 결합도 최소.
+#          지금은 동기 REST, 추후 이벤트(messaging)로 전환 예정.
+notification:
+  service:
+    url: ${NOTIFICATION_URL:http://localhost:8083}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: contact-service
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:contactdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

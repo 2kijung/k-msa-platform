@@ -115,7 +115,7 @@ openclaw-msa/  (플랫폼 루트)
 |---|---|---|
 | **0** | 플랫폼 레이아웃 확정(platform/apps/infra) + K-portfolio As-Is 흡수 | ✅ 완료 (07-24) |
 | **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | ✅ 코드 완료 (07-24) · 도커 실행검증만 보류 |
-| **2** | apps/portfolio/contact + platform 알림 연동 (**messaging 백본** 첫 도입) | ⬜ 예정 |
+| **2** | apps/portfolio/contact + 알림 연동 | 🔵 진행 중 (07-24) — contact-service 골격+REST 알림 연동 완료, 이벤트(messaging) 전환은 Phase 6 |
 | **3** | apps/portfolio/content 분리 | ⬜ 예정 |
 | **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
 | **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | ⬜ 예정 |
