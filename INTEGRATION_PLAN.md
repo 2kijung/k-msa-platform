@@ -107,25 +107,54 @@ openclaw-msa/  (플랫폼 루트)
 
 ---
 
-## 5. 로드맵 (Strangler Fig — 태스크와 1:1, 플랫폼 관점 반영)
+## 5. 로드맵 (Strangler Fig — 상태 실시간 반영)
 
-| Phase | 내용 |
+> 상태 범례: ✅ 완료 · 🔵 진행 중 · ⬜ 예정 · (날짜)는 완료/착수일
+
+| Phase | 내용 | 상태 |
+|---|---|---|
+| **0** | 플랫폼 레이아웃 확정(platform/apps/infra) + K-portfolio As-Is 흡수 | ✅ 완료 (07-24) |
+| **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | 🔵 진행 중 (07-24~) |
+| **2** | apps/portfolio/contact + platform 알림 연동 (**messaging 백본** 첫 도입) | ⬜ 예정 |
+| **3** | apps/portfolio/content 분리 | ⬜ 예정 |
+| **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
+| **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | ⬜ 예정 |
+| **6** | 관측성·트레이싱·회복탄력성 + infra(멀티환경/GitOps) + 전환/확장 스토리 | ⬜ 예정 |
+
+### Phase 1 세부 진행 (진행 중이라 쪼개서 추적)
+| 항목 | 상태 |
 |---|---|
-| **0** | 플랫폼 레이아웃 확정(platform/apps/infra), 중복 `src/` 정리, 게이트웨이에 모놀리식 통째 라우팅 |
-| **1** | platform/auth 분리 (인증 중앙화) |
-| **2** | apps/portfolio/contact + platform 알림 연동 (여기서 **messaging 백본** 첫 도입) |
-| **3** | apps/portfolio/content 분리 |
-| **4** | apps/blog 통합 (엔티티 + 자동발행) — **앱 추가 확장성 첫 시연** |
-| **5** | apps/portfolio/analytics 분리 + **apps/budget 편입** (2번째 도메인 = 확장성 증거) |
-| **6** | 관측성·트레이싱·회복탄력성 + infra(멀티환경/GitOps) + 전환/확장 스토리 (면접 방어) |
+| auth-service 코드 (로그인·JWT 발급·`/auth/verify` 검증) | ✅ 완료 (07-24) |
+| 실물 PostgreSQL 설계 (docker-compose + auth 스키마) | ✅ 완료 (07-24) |
+| auth-service 컨테이너화 (Dockerfile + compose 통합) | ✅ 완료 (07-24) |
+| 도커 실행 검증 (`docker compose up`) | ⏸ 보류 (사용자: 나중) |
+| **게이트웨이 라우팅** (Nginx → monolith + /auth→auth + auth_request) | ⬜ 다음 |
+| monolith에서 auth 코드 제거 (Strangler 분리 완료) | ⬜ 예정 |
 
 ---
 
-## 6. 지금 상태 & 다음
+## 6. 진행 현황 (실시간 — 매 작업마다 갱신)
 
-- [x] 전체 지도 + 주석 컨벤션 + 스캐폴딩 (1차)
-- [x] **플랫폼으로 격상 + 확장성 5축 반영** (2차, 이번 단계)
-- [ ] 미해결 결정: **사용자 연차**(문서 톤), **blog 스택(5-A/5-B)** → `MIGRATION_DESIGN §11`
-- [ ] 다음: Phase 0 — `platform/`·`apps/`·`infra/` 물리 레이아웃 정리 + 중복 `src/` 삭제 + `platform/gateway` `@DEEP`부터
+### ✅ 완료
+- 통합 리포 생성 + 격상 구조(platform/apps/infra) + 계획/스캐폴딩
+- **Phase 0**: K-portfolio As-Is 모놀리스 흡수 → `apps/portfolio/monolith/` (개인정보 PDF 제외)
+- **Phase 1 일부**: auth-service 코드 + 실물 PostgreSQL + 컨테이너화 + compose 통합
 
-> ⚠️ 선행 정리: 루트 `src/` 는 모듈화 이전 **중복 원본(빌드 안 됨)** → Phase 0에서 삭제.
+### 🔵 진행 중 — Phase 1
+- **게이트웨이 라우팅** (`platform/gateway`): Nginx가 monolith 라우팅 + `/auth/*`→auth-service + `auth_request`로 `/auth/verify` 검증
+- monolith에서 auth 코드 제거
+
+### ⬜ 다음
+- Phase 2~6 (로드맵 참조)
+
+### ⚠️ 계획 대비 변경·추가 이력 (Changelog — "왜 바뀌었나")
+- **07-23** 통합 위치 = **새 리포 `k-msa-platform`**로 확정 (openclaw 승격/K-portfolio 확장 아님). 이유: 전환 과정을 커밋 히스토리로 남기려고.
+- **07-24** DB 설계를 **H2 → 실물 PostgreSQL**로 전환. 원계획엔 없던 결정. 이유: dev-prod parity + JD의 RDB/PostgreSQL 요구 + 이력 임팩트 (사용자 제안).
+- **07-24** **auth 컨테이너화(Dockerfile+compose)를 Phase 1로 당김**. 원래 infra/Phase 6 성격이나 "실물 기동"을 조기 확보하려고.
+- **07-24** 도커 실행 검증은 **보류**(사용자: 나중에).
+
+### 미해결 결정
+- 연차/톤: 주니어→4~6년차(확정). blog 스택 5-A/5-B (폴리글랏 방침이라 둘 다 가능). budget 편입 범위.
+
+> 📌 규칙: 이 문서(§5 로드맵 상태 + §6 진행현황/Changelog)는 **작업할 때마다 실시간 갱신**한다.
+>   - 착수 시 해당 항목 🔵, 완료 시 ✅(날짜), 계획에 없던 게 생기면 Changelog에 "왜"와 함께 기록.
