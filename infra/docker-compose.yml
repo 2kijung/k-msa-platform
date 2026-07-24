@@ -68,6 +68,45 @@ services:
       timeout: 3s
       retries: 5
 
+  # ── monolith (K-portfolio 백엔드, 전환 중 임시 존치) ─────────────────────
+  monolith:
+    # [왜/Strangler] 아직 안 쪼갠 K-portfolio 백엔드. 게이트웨이가 대부분 트래픽을 여기로 보낸다.
+    #                서비스가 하나씩 분리될 때마다 이쪽 코드·라우트가 줄어든다.
+    build:
+      # [왜] monolith 안에 흡수된 K-portfolio 백엔드의 Dockerfile로 빌드
+      context: ../apps/portfolio/monolith/dev-portfolio-backend
+    container_name: kmsa-monolith
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod        # [왜] prod = PostgreSQL 프로필 활성
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      # [왜/MSA] 같은 postgres 인스턴스를 쓰되 monolith는 public 스키마(기본), auth-service는 auth 스키마
+      #          → 데이터 격리 유지. @DEEP 추후 monolith도 portfolio 전용 스키마로 격리
+      DB_NAME: kmsa
+      DB_USER: kmsa
+      DB_PASSWORD: kmsa1234
+      # [왜] auth-service와 동일 서명키 (전환 중 K-portfolio 자체 인증과 토큰 호환)
+      JWT_SECRET: local-dev-only-secret-change-me-please-32bytes-min
+    ports:
+      - "8080:8080"   # [왜] 게이트웨이 뒤라 필수는 아니나 개발 디버깅용 노출
+
+  # ── gateway (Nginx API 게이트웨이) ──────────────────────────────────────
+  gateway:
+    # [왜/MSA] 단일 진입점. 외부는 여기(80)로만 접근하고 내부 서비스(auth/monolith)는 숨긴다.
+    image: nginx:1.27-alpine
+    container_name: kmsa-gateway
+    depends_on:
+      - auth-service
+      - monolith
+    volumes:
+      # [왜] 우리가 작성한 라우팅 규칙을 nginx가 읽는 conf.d 위치에 읽기전용 마운트
+      - ../platform/gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"   # [왜] 클라이언트는 http://localhost 로 전체 서비스에 접근
+
 # [왜] 명명된 볼륨. 위 postgres가 데이터를 여기 저장.
 volumes:
   kmsa-pgdata:

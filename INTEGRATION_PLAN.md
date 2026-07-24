@@ -128,7 +128,9 @@ openclaw-msa/  (플랫폼 루트)
 | 실물 PostgreSQL 설계 (docker-compose + auth 스키마) | ✅ 완료 (07-24) |
 | auth-service 컨테이너화 (Dockerfile + compose 통합) | ✅ 완료 (07-24) |
 | 도커 실행 검증 (`docker compose up`) | ⏸ 보류 (사용자: 나중) |
-| 게이트웨이 라우팅 conf (Nginx → monolith + /auth→auth-service + auth_request 검증 위임) | ✅ conf 작성 (07-24) · 실기동은 monolith 컨테이너화 후 |
+| 게이트웨이 라우팅 conf (Nginx → monolith + /auth→auth-service + auth_request 검증 위임) | ✅ 완료 (07-24) |
+| monolith 컨테이너 통합 (K-portfolio prod → kmsa postgres, public 스키마 임시) | ✅ 완료 (07-24) |
+| compose 전체 스택 통합 (postgres+auth+monolith+gateway 한 번에 기동) | ✅ 완료 (07-24) · 실행 검증만 보류 |
 | monolith에서 auth 코드 제거 (Strangler 분리 완료) | ⬜ 예정 |
 
 ---
