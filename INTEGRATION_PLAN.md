@@ -119,7 +119,7 @@ openclaw-msa/  (플랫폼 루트)
 | **3** | apps/portfolio/content 분리 | ⬜ 예정 |
 | **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
 | **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | ⬜ 예정 |
-| **6** | 관측성·트레이싱·회복탄력성 + infra(멀티환경/GitOps) + 전환/확장 스토리 | ⬜ 예정 |
+| **6** | 관측성·트레이싱·회복탄력성 + 부하테스트 + infra + 전환/확장 스토리 | 🔵 착수 (07-24) — 부하테스트(k6) + 관측성(Prometheus+Grafana compose 통합) 작성. 실행측정·분산트레이싱·회복탄력성(Resilience4j)은 다음 |
 
 ### Phase 1 세부 진행 (진행 중이라 쪼개서 추적)
 | 항목 | 상태 |

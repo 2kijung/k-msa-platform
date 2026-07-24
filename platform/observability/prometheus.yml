@@ -1,0 +1,30 @@
+# ============================================================================
+# platform/observability/prometheus.yml — Prometheus 스크레이프 설정
+# ============================================================================
+# [무엇을] 각 서비스의 /actuator/prometheus 를 주기적으로 긁어 메트릭을 수집한다.
+# [왜/MSA] 흩어진 서비스를 "하나처럼" 관측하는 통합 관리의 핵심. 서비스별 지연·에러·처리량을
+#          한 곳(Prometheus)에 모으고 Grafana로 시각화 → "MSA 운영 역량"의 시각적 증거.
+# [어떻게] 각 서비스가 actuator+micrometer로 노출한 메트릭을 job별로 수집.
+# ============================================================================
+global:
+  scrape_interval: 15s   # [왜] 15초마다 수집(로컬 데모에 적당)
+
+scrape_configs:
+  # [왜/MSA] 서비스마다 job 하나. targets는 compose 네트워크의 서비스명:포트.
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8081']
+
+  - job_name: 'contact-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['contact-service:8085']
+
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['notification:8083']
+
+  # [주의] monolith(K-portfolio)는 actuator prometheus 노출이 prod에서 health/info만 열려 있음.
+  #        @DEEP monolith application-prod.yml 의 exposure에 prometheus 추가하면 여기에 job 추가.
