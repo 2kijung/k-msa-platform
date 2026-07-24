@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  notification-service / pom.xml
+  [무엇을] 알림 전송 전용 서비스(Telegram). 여러 앱이 공유하는 platform 계층 서비스.
+  [왜/MSA] contact 등 어느 서비스든 REST(/notify/send)로 호출. 알림 방식(Telegram→Slack 등)이
+           바뀌어도 이 서비스만 고치면 됨(단일 책임). DB 불필요(상태 없음).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.kmsa</groupId>
+    <artifactId>notification-service</artifactId>
+    <version>1.0.0</version>
+    <name>notification-service</name>
+    <properties><java.version>17</java.version></properties>
+    <dependencies>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
+    </dependencies>
+    <build><plugins>
+        <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin>
+    </plugins></build>
+</project>

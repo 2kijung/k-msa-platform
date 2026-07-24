@@ -1,0 +1,19 @@
+# notification-service / application.yml
+# [왜/MSA] 자기 포트(8083). DB 없음(무상태). 알림 채널 설정만 환경변수로.
+server:
+  port: 8083
+spring:
+  application:
+    name: notification-service
+# [왜] Telegram 봇 설정. 비어 있으면 실제 전송은 건너뛰고 로그만(개발/데모 시 안전).
+telegram:
+  bot-token: ${TELEGRAM_BOT_TOKEN:}
+  chat-id: ${TELEGRAM_CHAT_ID:}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: notification-service

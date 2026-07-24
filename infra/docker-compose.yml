@@ -113,6 +113,19 @@ services:
     ports:
       - "8085:8085"
 
+  # ── notification-service (알림, Telegram) ───────────────────────────────
+  notification:
+    # [왜/MSA] contact가 REST로 호출하는 알림 서비스. 서비스명 'notification'이 곧 DNS 호스트.
+    build:
+      context: ../platform/notification
+    container_name: kmsa-notification
+    environment:
+      # [왜] 봇 설정이 비면 실제 전송은 건너뛰고 로그만 → 데모 시 토큰 없이도 안전하게 흐름 확인 가능
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    ports:
+      - "8083:8083"
+
   # ── gateway (Nginx API 게이트웨이) ──────────────────────────────────────
   gateway:
     # [왜/MSA] 단일 진입점. 외부는 여기(80)로만 접근하고 내부 서비스(auth/monolith)는 숨긴다.
