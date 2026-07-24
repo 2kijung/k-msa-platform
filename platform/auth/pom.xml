@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  auth-service / pom.xml
+  ============================================================================
+  [무엇을] 이 파일은 auth-service를 "독립적으로 빌드되는 하나의 배포 단위"로 정의한다.
+  [왜/MSA] MSA의 1원칙 = "독립 배포 단위". monolith와 별개의 pom을 가진다는 것 자체가
+           "이 서비스는 혼자 빌드되고 혼자 배포된다"는 뜻이다. monolith를 고쳐도
+           auth-service는 재배포할 필요가 없고, 그 반대도 마찬가지다.
+  [어떻게] Spring Boot 3.2 기반. K-portfolio(monolith)와 같은 Boot 버전을 써서
+           User/JWT 코드를 거의 그대로 이관할 수 있게 했다(폴리글랏 실험 방침이지만
+           auth는 이관이 목적이라 스택을 맞췄다).
+  ============================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- [왜] Spring Boot parent = Boot의 의존성 버전을 자동 관리(버전 생략 가능) -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <!-- [무엇을] 이 서비스의 좌표. groupId를 monolith(com.kimdevops)와 다르게 둔 이유:
+         이건 "새 플랫폼의 서비스"이지 K-portfolio의 일부가 아님을 이름으로 구분. -->
+    <groupId>com.kmsa</groupId>
+    <artifactId>auth-service</artifactId>
+    <version>1.0.0</version>
+    <name>auth-service</name>
+    <description>중앙 인증 서비스 — 로그인·JWT 발급·검증(게이트웨이 위임용)</description>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- [무엇을] 웹(REST 컨트롤러). [왜] /auth/login, /auth/verify를 REST로 노출 → MSA는 REST로 통신 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- [무엇을] JPA. [왜] auth 스키마의 users 테이블을 ORM으로 다룸(자기 데이터 소유) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- [무엇을] Security. [왜] BCrypt 비밀번호 검증 + 필터 체인. 로그인의 기본 보안 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- [무엇을] Actuator. [왜/MSA] K8s가 이 서비스의 생사를 확인(liveness/readiness probe)하고
+             Prometheus가 메트릭을 긁어감. 관측성(다음 단계)의 전제 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- [무엇을] JWT 라이브러리(JJWT). [왜] 토큰 발급/검증. K-portfolio와 동일 버전으로 이관 -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId><artifactId>jjwt-api</artifactId><version>0.12.3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId><artifactId>jjwt-impl</artifactId><version>0.12.3</version><scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId><artifactId>jjwt-jackson</artifactId><version>0.12.3</version><scope>runtime</scope>
+        </dependency>
+
+        <!-- [무엇을] DB 드라이버. [왜] 개발은 H2(무설치), 운영은 PostgreSQL(auth 스키마). URL만 바꿔 교체 -->
+        <dependency>
+            <groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- [무엇을] 실행 가능한 단일 jar 생성. [왜/MSA] `java -jar auth-service.jar`로
+                 이 서비스 하나만 독립 실행 → 컨테이너 1개 = 서비스 1개 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
