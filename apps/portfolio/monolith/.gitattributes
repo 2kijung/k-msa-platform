@@ -1,0 +1,43 @@
+# =====================================================================
+# 크로스 플랫폼 줄바꿈 정규화 - Windows(CRLF) <-> Mac/Linux(LF)
+# 저장소에는 항상 LF로 저장 → Mac/Windows 오가도 파일 변경 오인 방지
+# =====================================================================
+* text=auto eol=lf
+
+# Windows 전용 스크립트는 CRLF 유지
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# Unix 스크립트는 LF 유지
+*.sh    text eol=lf
+mvnw    text eol=lf
+gradlew text eol=lf
+
+# 소스/설정 (LF)
+*.java text eol=lf
+*.xml  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+Dockerfile text eol=lf
+
+# 바이너리 (변환 금지)
+*.jar binary
+*.war binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary

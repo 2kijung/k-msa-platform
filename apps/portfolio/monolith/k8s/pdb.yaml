@@ -1,0 +1,23 @@
+# PodDisruptionBudget: 롤링 업데이트/노드 드레인 시 최소 가용 파드 보장
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: portfolio-backend-pdb
+  namespace: portfolio
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: portfolio-backend
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: portfolio-frontend-pdb
+  namespace: portfolio
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: portfolio-frontend

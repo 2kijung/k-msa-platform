@@ -1,0 +1,42 @@
+# Minikube 로컬용 경량 Prometheus 설정
+prometheus:
+  prometheusSpec:
+    replicas: 1
+    retention: 7d
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+    # portfolio 네임스페이스 메트릭 수집
+    additionalScrapeConfigs:
+      - job_name: 'portfolio-backend'
+        metrics_path: '/api/actuator/prometheus'
+        static_configs:
+          - targets: ['portfolio-backend.portfolio.svc.cluster.local:8080']
+
+alertmanager:
+  enabled: false   # 로컬 환경에서는 비활성
+
+grafana:
+  enabled: true
+  adminPassword: "grafana1234"
+  service:
+    type: NodePort
+  persistence:
+    enabled: false   # 로컬은 휘발성 OK
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true

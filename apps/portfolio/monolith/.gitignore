@@ -1,0 +1,49 @@
+# ===== Java / Maven (백엔드) =====
+target/
+build/
+*.class
+HELP.md
+
+# ===== Node / React (프론트엔드) =====
+node_modules/
+dist/
+.pnpm-store/
+*-debug.log*
+
+# ===== 로그 =====
+*.log
+logs/
+
+# ===== 환경 변수 / 비밀 정보 (절대 커밋 금지) =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===== IDE =====
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+out/
+bin/
+
+# ===== OS 생성 파일 =====
+# macOS
+.DS_Store
+._*
+# Windows
+Thumbs.db
+Desktop.ini
+
+# ===== 이 프로젝트 정리 중 생긴 것들 =====
+_backup_duplicate_files/
+*.iml
+out/
+
+# Jenkins 로컬 실행 데이터
+data/
+logs/

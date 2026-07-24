@@ -1,0 +1,34 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: portfolio-jenkins
+    privileged: true
+    user: root
+    ports:
+      - "9090:8080"     # Jenkins UI (8081은 Spring Boot 로컬 실행 포트)
+      - "50000:50000"   # Jenkins agent
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # 프로젝트 소스 마운트
+      - /Users/k/IdeaProjects/K-portfolio:/project:ro
+      # Docker socket (Jenkins에서 docker 명령 실행)
+      - /Users/k/.colima/default/docker.sock:/var/run/docker.sock
+      # kubectl, minikube 바이너리
+      - /opt/homebrew/bin/kubectl:/usr/local/bin/kubectl:ro
+      - /opt/homebrew/bin/minikube:/usr/local/bin/minikube:ro
+      # Maven, Java
+      - /opt/homebrew/opt/openjdk@17:/opt/jdk17:ro
+      - /opt/homebrew/opt/maven:/opt/maven:ro
+      # pnpm / node
+      - /opt/homebrew/bin/pnpm:/usr/local/bin/pnpm:ro
+      - /opt/homebrew/bin/node:/usr/local/bin/node:ro
+      # kubeconfig (Minikube 접근용)
+      - /Users/k/.kube:/root/.kube:ro
+      - /Users/k/.minikube:/root/.minikube:ro
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
