@@ -25,7 +25,9 @@ spring:
     # [왜/MSA] kmsa DB에 붙되 currentSchema=auth → auth-service는 'auth 스키마'만 본다.
     #          다른 서비스 스키마(content/contact...)는 접근하지 않는다(데이터 격리).
     # [전제] 먼저 `cd infra && docker compose up -d` 로 postgres를 띄워야 한다.
-    url: jdbc:postgresql://localhost:5432/kmsa?currentSchema=auth
+    # [왜] 호스트/DB명을 환경변수화 → 로컬 IDE 실행(기본 localhost)과 docker-compose 실행(postgres 서비스명)이
+    #      동일한 설정을 공유한다. 컨테이너 안에선 DB_HOST=postgres 가 주입되어 컨테이너 네트워크로 붙는다.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kmsa}?currentSchema=auth
     driver-class-name: org.postgresql.Driver
     username: ${DB_USER:kmsa}
     password: ${DB_PASSWORD:kmsa1234}

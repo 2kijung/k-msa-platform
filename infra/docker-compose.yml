@@ -36,6 +36,38 @@ services:
       timeout: 3s
       retries: 5
 
+  # ── auth-service (Spring Boot) ──────────────────────────────────────────
+  auth-service:
+    # [왜/MSA] build = 이 서비스의 Dockerfile로 이미지를 직접 빌드. 각 서비스가 자기 이미지를 갖는다.
+    #          context는 auth-service 프로젝트 루트(pom/Dockerfile 위치).
+    build:
+      context: ../platform/auth
+    container_name: kmsa-auth
+    depends_on:
+      postgres:
+        # [왜/MSA] postgres가 healthy(pg_isready 통과)된 뒤에 auth를 띄운다.
+        #          DB보다 먼저 떠서 연결 실패하는 race condition을 막는다(부팅 순서 제어).
+        condition: service_healthy
+    environment:
+      # [왜/MSA] 컨테이너 네트워크에선 DB 호스트가 localhost가 아니라 서비스명 'postgres'다(compose 내장 DNS).
+      #          application.yml의 ${DB_HOST:localhost} 를 여기서 postgres로 오버라이드.
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: kmsa
+      DB_USER: kmsa
+      DB_PASSWORD: kmsa1234
+      # [보안] JWT 서명키 주입. 로컬 데모용 — 운영에선 K8s Secret으로 주입.
+      JWT_SECRET: local-dev-only-secret-change-me-please-32bytes-min
+    ports:
+      # [왜] 호스트 8081 → 컨테이너 8081. 게이트웨이/개발자가 이 포트로 auth에 접근.
+      - "8081:8081"
+    healthcheck:
+      # [왜/MSA] K8s liveness/readiness probe의 compose판. auth가 실제 응답하는지 확인 → Self-Healing 기반.
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8081/auth/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
 # [왜] 명명된 볼륨. 위 postgres가 데이터를 여기 저장.
 volumes:
   kmsa-pgdata:
