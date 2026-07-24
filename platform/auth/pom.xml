@@ -74,12 +74,14 @@
             <groupId>io.jsonwebtoken</groupId><artifactId>jjwt-jackson</artifactId><version>0.12.3</version><scope>runtime</scope>
         </dependency>
 
-        <!-- [무엇을] DB 드라이버. [왜] 개발은 H2(무설치), 운영은 PostgreSQL(auth 스키마). URL만 바꿔 교체 -->
-        <dependency>
-            <groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope>
-        </dependency>
+        <!-- [무엇을] PostgreSQL 드라이버. [왜/이력] 개발·운영 모두 실물 PostgreSQL(dev-prod parity).
+             auth-service는 kmsa DB의 'auth 스키마'만 사용. -->
         <dependency>
             <groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope>
+        </dependency>
+        <!-- [무엇을] H2. [왜] '단위 테스트 전용'으로 격하(scope=test). 실제 개발/운영은 PostgreSQL. -->
+        <dependency>
+            <groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>test</scope>
         </dependency>
     </dependencies>
 
