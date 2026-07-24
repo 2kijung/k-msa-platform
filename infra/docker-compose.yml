@@ -93,6 +93,26 @@ services:
     ports:
       - "8080:8080"   # [왜] 게이트웨이 뒤라 필수는 아니나 개발 디버깅용 노출
 
+  # ── contact-service (문의 접수 + 알림, Phase 2) ─────────────────────────
+  contact-service:
+    build:
+      context: ../apps/portfolio/contact-service
+    container_name: kmsa-contact
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: kmsa      # [왜/MSA] 같은 인스턴스, contact 스키마로 격리
+      DB_USER: kmsa
+      DB_PASSWORD: kmsa1234
+      # [왜] 알림 서비스 URL. notification-service 미기동 시 호출은 실패하나
+      #      문의 접수 본흐름은 정상(NotificationClient가 실패를 삼킴).
+      NOTIFICATION_URL: http://notification:8083
+    ports:
+      - "8085:8085"
+
   # ── gateway (Nginx API 게이트웨이) ──────────────────────────────────────
   gateway:
     # [왜/MSA] 단일 진입점. 외부는 여기(80)로만 접근하고 내부 서비스(auth/monolith)는 숨긴다.

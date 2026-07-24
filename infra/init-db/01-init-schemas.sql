@@ -15,7 +15,8 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 -- ── 향후 서비스 확장 시 여기에 스키마를 추가한다 (지금은 주석으로 예약) ──
 -- CREATE SCHEMA IF NOT EXISTS content;    -- portfolio-content-service (Project/Career/Skill...)
--- CREATE SCHEMA IF NOT EXISTS contact;    -- contact-service
+CREATE SCHEMA IF NOT EXISTS contact;       -- contact-service (활성화됨)
+GRANT ALL ON SCHEMA contact TO kmsa;
 -- CREATE SCHEMA IF NOT EXISTS analytics;  -- analytics-service (Visitor)
 -- CREATE SCHEMA IF NOT EXISTS blog;       -- blog-service
 
