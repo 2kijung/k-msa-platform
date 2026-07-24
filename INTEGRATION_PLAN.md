@@ -114,7 +114,7 @@ openclaw-msa/  (플랫폼 루트)
 | Phase | 내용 | 상태 |
 |---|---|---|
 | **0** | 플랫폼 레이아웃 확정(platform/apps/infra) + K-portfolio As-Is 흡수 | ✅ 완료 (07-24) |
-| **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | 🔵 진행 중 (07-24~) |
+| **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | ✅ 코드 완료 (07-24) · 도커 실행검증만 보류 |
 | **2** | apps/portfolio/contact + platform 알림 연동 (**messaging 백본** 첫 도입) | ⬜ 예정 |
 | **3** | apps/portfolio/content 분리 | ⬜ 예정 |
 | **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
@@ -131,7 +131,7 @@ openclaw-msa/  (플랫폼 루트)
 | 게이트웨이 라우팅 conf (Nginx → monolith + /auth→auth-service + auth_request 검증 위임) | ✅ 완료 (07-24) |
 | monolith 컨테이너 통합 (K-portfolio prod → kmsa postgres, public 스키마 임시) | ✅ 완료 (07-24) |
 | compose 전체 스택 통합 (postgres+auth+monolith+gateway 한 번에 기동) | ✅ 완료 (07-24) · 실행 검증만 보류 |
-| monolith에서 auth 코드 제거 (Strangler 분리 완료) | ⬜ 예정 |
+| monolith에서 auth 코드 제거 (Strangler 분리 완료) | ✅ 완료 (07-24) — JWT필터→헤더신뢰필터 교체, AuthController/AuthService/JwtUtil/JwtAuthenticationFilter 삭제 |
 
 ---
 
