@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: kmsa1234
     ports:
       # [왜] 호스트 5432 → 컨테이너 5432. IDE/로컬 auth-service가 localhost:5432로 접속.
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       # [왜] 데이터 영속화. 컨테이너를 지워도 DB 데이터는 이 볼륨에 남는다(재시작해도 유지).
       - kmsa-pgdata:/var/lib/postgresql/data
@@ -148,7 +148,7 @@ services:
     volumes:
       - ../platform/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - "9090:9090"   # [왜] Prometheus UI. http://localhost:9090
+      - "9091:9090"   # [왜] Prometheus UI. http://localhost:9090
 
   # ── grafana (대시보드 시각화) ───────────────────────────────────────────
   grafana:

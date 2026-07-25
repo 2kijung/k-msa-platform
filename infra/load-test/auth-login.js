@@ -42,7 +42,10 @@ export default function () {
   // [무엇을] 응답 검증. 로그인 성공(200) + 토큰 존재 확인.
   check(res, {
     'status is 200': (r) => r.status === 200,
-    'has token': (r) => r.body && r.body.includes('token'),
+    'has token': (r) => {
+      try { const b = JSON.parse(r.body); return b.data && b.data.token !== undefined; }
+      catch(e) { return r.body && r.body.includes('token'); }
+    },
   });
 
   sleep(1);  // [왜] 실제 사용자처럼 요청 간 간격

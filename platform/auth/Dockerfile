@@ -22,7 +22,7 @@ RUN mvn -q clean package -DskipTests
 
 # ---- 2단계: 실행 (JRE만) ----
 # [왜] jre-alpine = 실행에 필요한 최소 런타임. JDK/Maven 없음 → 작고 안전.
-FROM eclipse-temurin:17-jre-alpine
+FROM amazoncorretto:17-alpine3.21
 WORKDIR /app
 
 # [무엇을] 1단계에서 만든 실행 가능 jar만 가져온다. (artifactId-version = auth-service-1.0.0.jar)
