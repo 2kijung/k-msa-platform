@@ -30,9 +30,16 @@ k6 run load-test/auth-login.js
 - 게이트웨이: Nginx (단일 진입점, auth_request 위임 인증 포함)
 - 총 요청: 11,420건 / 3분
 
-### 분석
-게이트웨이(Nginx auth_request) 경유 포함 p95 0.53ms — JWT 서명·검증과 DB 조회가 모두
-포함된 수치다. 로컬 환경(단일 컨테이너)이나 인증 처리량 자체는 검증됨.
+### 측정 경로
+Nginx 리버스 프록시(`:80`)를 통해 auth-service 로그인 API를 호출했다.
+`/api/auth/login`은 공개 엔드포인트라 `auth_request` 인증 위임을 거치지 않는다.
+(`auth_request`는 `location /` — 모놀리식 경로에만 적용)
+
+```
+k6 → Nginx :80 → /api/auth/login → auth-service :8081 → PostgreSQL
+```
+
+로컬 단일 컨테이너 환경이므로 절대 성능이 아니라 SLO 임계값 통과 여부를 확인한 값이다.
 HPA 적용 시나리오는 K8s 배포 후 측정 예정.
 
 <!--
