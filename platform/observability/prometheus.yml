@@ -26,5 +26,11 @@ scrape_configs:
     static_configs:
       - targets: ['notification:8083']
 
+  - job_name: 'content-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # [Phase 3] portfolio 콘텐츠 서비스 (Project/Career/Skill/Cert/Profile)
+      - targets: ['content-service:8084']
+
   # [주의] monolith(K-portfolio)는 actuator prometheus 노출이 prod에서 health/info만 열려 있음.
   #        @DEEP monolith application-prod.yml 의 exposure에 prometheus 추가하면 여기에 job 추가.

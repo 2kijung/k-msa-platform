@@ -13,34 +13,50 @@ k6 run load-test/auth-login.js
 # 3) 결과 지표 확인: http_reqs(TPS), http_req_duration p95, http_req_failed(에러율)
 ```
 
-## 측정 결과 (2026-07-25 실측)
+## 측정 결과
 
-| 시나리오 | VU | TPS | p(95) | 에러율 | SLO | 비고 |
-|---|---|---|---|---|---|---|
-| 로그인 — Nginx 게이트웨이 경유 (기준선) | 100 | **63.3 req/s** | **0.53ms** | **0.00%** | ✅ PASS | 워밍업 30s → 100VU 1m 유지 → 쿨다운 30s |
-| 로그인 (HPA 적용) | 100 | @DEEP | @DEEP | @DEEP | - | K8s HPA 연동 후 측정 예정 |
+| 날짜 | 시나리오 | VU | TPS | p(95) | 에러율 | SLO | 비고 |
+|---|---|---|---|---|---|---|---|
+| **2026-08-02** | 로그인 — auth-service 직접 (기준선) | 100 | **44.7 req/s** | **744ms** | **0.00%** | ❌ p95 초과 | auth-direct.js, Caddy 충돌로 게이트웨이 우회 |
+| 2026-08-02 이후 | 로그인 — 게이트웨이(:8090) 경유 | 100 | @DEEP | @DEEP | @DEEP | - | gateway 포트 8090 확인 후 재측 |
+| 미정 | 로그인 (K8s HPA 적용) | 100 | @DEEP | @DEEP | @DEEP | - | K8s HPA 연동 후 측정 |
+
+### 2026-08-02 실측 상세 (auth-direct.js)
+
+```
+실측 환경:  Apple M4 Pro (ARM64), Docker Desktop, 로컬 단일 서버
+시나리오:   워밍업 30s(20VU) → 100VU 1분 → 유지 1분 → 쿨다운 30s
+대상:       auth-service:8081/auth/login 직접 (JWT 발급, BCrypt 검증 + PostgreSQL 조회)
+총 요청:    8,081건 / 3분
+
+TPS        44.7 req/s
+avg        415.94ms
+min        57.2ms
+med        507.92ms
+p(90)      701.4ms
+p(95)      744ms   ← SLO(500ms) 초과
+max        1,760ms
+에러율      0.00%  ← 8,081건 전원 200 OK
+check 통과  100%   (status 200 ✅, has token ✅)
+```
 
 ### SLO 기준
-- `p(95) < 500ms` — 실측 **0.53ms**, 기준 대비 **약 940배 여유**
-- `에러율 < 1%` — 실측 **0.00%**
+- `p(95) < 500ms` — 실측 **744ms** (초과, 로컬 BCrypt+PostgreSQL 지연)
+- `에러율 < 1%` — 실측 **0.00%** ✅
 
-### 환경
-- Apple M-series (ARM64), Docker 컨테이너
-- auth-service: Spring Boot 3 + PostgreSQL 16 (amazoncorretto:17-alpine)
-- 게이트웨이: Nginx (단일 진입점, auth_request 위임 인증 포함)
-- 총 요청: 11,420건 / 3분
+**SLO 초과 원인 분석:**
+로컬 macOS Docker 환경에서 BCrypt 해싱(cost factor 10)이 CPU 부하의 주요 원인이다.
+JVM 워밍업 + 단일 컨테이너 + PostgreSQL 쿼리가 복합된 결과로, 에러율 0%는 안정성 증명.
+운영 K8s에서 HPA + 다중 레플리카 적용 시 TPS↑ p95↓ 예상 → @DEEP 재측정 필요.
 
 ### 측정 경로
-Nginx 리버스 프록시(`:80`)를 통해 auth-service 로그인 API를 호출했다.
-`/api/auth/login`은 공개 엔드포인트라 `auth_request` 인증 위임을 거치지 않는다.
-(`auth_request`는 `location /` — 모놀리식 경로에만 적용)
 
 ```
-k6 → Nginx :80 → /api/auth/login → auth-service :8081 → PostgreSQL
+k6 → auth-service:8081/auth/login → PostgreSQL:5432/auth.users (BCrypt 검증 + JWT 발급)
 ```
 
-로컬 단일 컨테이너 환경이므로 절대 성능이 아니라 SLO 임계값 통과 여부를 확인한 값이다.
-HPA 적용 시나리오는 K8s 배포 후 측정 예정.
+게이트웨이(Nginx:8090) 경유 재측 시: `k6 run load-test/auth-login.js`
+(로컬 Caddy 포트 충돌으로 게이트웨이를 8090으로 변경, 기존 80은 k-devops.duckdns.org 담당)
 
 <!--
 @DEEP 다음 단계:

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  content-service / pom.xml
+  [무엇을] 포트폴리오 콘텐츠(Project·Career·Skill·Certification·Profile) CRUD 서비스. 독립 배포 단위.
+  [왜/MSA] Phase 3 — monolith에서 콘텐츠 도메인을 분리. 공개 조회 / 관리 보호(게이트웨이 위임).
+           인증 로직 없음 — 게이트웨이가 auth_request로 검증 후 X-User-Id 헤더만 주입.
+  [포트] 8084. 스키마: portfolio.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.kmsa</groupId>
+    <artifactId>content-service</artifactId>
+    <version>1.0.0</version>
+    <name>content-service</name>
+    <description>포트폴리오 콘텐츠 CRUD 서비스 (Project/Career/Skill/Certification/Profile)</description>
+    <properties><java.version>17</java.version></properties>
+
+    <dependencies>
+        <!-- [왜] Web: REST API 제공 -->
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+        <!-- [왜] JPA: 엔티티 5종 → PostgreSQL portfolio 스키마 -->
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
+        <!-- [왜] Actuator: /actuator/health probe + /actuator/prometheus Prometheus 스크레이프 -->
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
+        <!-- [왜] Prometheus Micrometer: 메트릭 노출(Phase 6 관측성) -->
+        <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
+        <!-- [왜] PostgreSQL 드라이버 (runtime만 — 컴파일타임 불필요) -->
+        <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
+        <!-- [왜] 테스트 전용 인메모리 DB (실물 DB = prod parity) -->
+        <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>test</scope></dependency>
+    </dependencies>
+
+    <build><plugins>
+        <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin>
+    </plugins></build>
+</project>

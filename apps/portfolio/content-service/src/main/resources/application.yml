@@ -1,0 +1,45 @@
+# content-service / application.yml
+# [왜/MSA] 포트 8084. DB = PostgreSQL portfolio 스키마(콘텐츠 서비스 전용).
+#          인증 없음 — 게이트웨이가 auth_request로 검증, X-User-Id 헤더로 전달.
+server:
+  port: 8084
+spring:
+  application:
+    name: content-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kmsa}?currentSchema=portfolio
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:kmsa}
+    password: ${DB_PASSWORD:kmsa1234}
+  jpa:
+    hibernate:
+      # [왜/MSA] update: 서비스 재기동 시 스키마 변경 자동 반영. 운영은 Flyway로 전환 예정(@DEEP).
+      ddl-auto: update
+    properties:
+      hibernate:
+        # [왜/MSA] content-service는 portfolio 스키마만 본다(데이터 격리).
+        default_schema: portfolio
+    show-sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # [왜/Phase6] prometheus: Prometheus 스크레이프 대상. health: K8s probe.
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: content-service
+
+---
+# [왜] 테스트 프로필: 실물 DB 대신 H2 인메모리 사용(속도). 프로덕션은 위 기본 프로필.
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:contentdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

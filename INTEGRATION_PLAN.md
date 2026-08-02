@@ -116,7 +116,7 @@ openclaw-msa/  (플랫폼 루트)
 | **0** | 플랫폼 레이아웃 확정(platform/apps/infra) + K-portfolio As-Is 흡수 | ✅ 완료 (07-24) |
 | **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | ✅ 코드 완료 (07-24) · 도커 실행검증만 보류 |
 | **2** | apps/portfolio/contact + 알림 연동 | ✅ 코드 완료 (07-24) — contact-service + notification-service(REST) + compose·게이트웨이 통합. 이벤트(messaging) 전환은 Phase 6, 도커 실행검증 보류 |
-| **3** | apps/portfolio/content 분리 | ⬜ 예정 |
+| **3** | apps/portfolio/content 분리 | ✅ 코드 완료 (08-02) — content-service 기동 검증(projects/profile API 정상) |
 | **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
 | **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | ⬜ 예정 |
 | **6** | 관측성·트레이싱·회복탄력성 + 부하테스트 + infra + 전환/확장 스토리 | 🔵 착수 (07-24) — 부하테스트(k6) + 관측성(Prometheus+Grafana compose 통합) 작성. 실행측정·분산트레이싱·회복탄력성(Resilience4j)은 다음 |
@@ -150,12 +150,24 @@ openclaw-msa/  (플랫폼 루트)
 
 ## 6. 진행 현황 (실시간 — 매 작업마다 갱신)
 
-### ✅ 완료 (2026-07-24 세션 종료 시점)
+### ✅ 완료
+
+**2026-07-24 세션:**
 - 통합 리포 생성 + 격상 구조(platform/apps/infra) + 계획/스캐폴딩
-- **Phase 0**: K-portfolio As-Is 모놀리스 흡수 → `apps/portfolio/monolith/` (개인정보 PDF 제외)
-- **Phase 1**: auth-service **전체 코드 완료 + monolith에서 auth 제거(Strangler 완결)**
-- **Phase 2**: contact-service + notification-service **코드 완료**, compose·게이트웨이 통합
+- **Phase 0**: K-portfolio As-Is 모놀리스 흡수 → `apps/portfolio/monolith/`
+- **Phase 1**: auth-service 전체 코드 완료 + monolith에서 auth 제거(Strangler 완결)
+- **Phase 2**: contact-service + notification-service 코드 완료, compose·게이트웨이 통합
 - **Phase 6 착수**: k6 부하테스트 시나리오 + Prometheus/Grafana compose 통합
+
+**2026-08-02 세션:**
+- notification-service/Dockerfile + contact-service/Dockerfile 생성 (Phase 2 누락 파일)
+- gateway 포트 80→8090 변경 (Caddy(k-devops.duckdns.org) 포트 충돌 해소)
+- **k6 실측정** — auth-service 직접(8081), TPS 44.7, p95 744ms, 에러율 0.00% (8,081건)
+- init-db portfolio 스키마 추가, Prometheus content-service job 추가
+- **Phase 3**: content-service 완전 구현 + 기동 검증 (projects/profile API 정상)
+  - 엔티티 5종 + Repository + Service + Controller + DataInitializer + Dockerfile
+  - compose + nginx 라우팅 통합
+- compose `name:` 추가 (k-msa-platform / openclaw-msa 프로젝트명 충돌 방지)
 
 ### ⬜ 다음 세션 시작점 (git pull 받고 바로 여기부터)
 **최우선 — Phase 6 실탄 완성 (자소서 대용량 갭을 메우는 작업)**:

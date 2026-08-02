@@ -27,26 +27,37 @@
 5. **DB는 실물 PostgreSQL**(dev-prod parity). H2는 테스트 전용. 서비스마다 스키마 분리(auth/contact/...).
 6. **폴리글랏 실험 OK**이나 신규 서비스는 기본 Spring Boot 3.2. 서비스 간은 REST/이벤트로만 통신(코드 JAR 공유 금지).
 
-## 지금까지 완료 (2026-07-24 기준)
+## 지금까지 완료 (2026-08-02 기준)
 
 - **Phase 0** ✅ K-portfolio 모놀리스 흡수 → `apps/portfolio/monolith/`
 - **Phase 1** ✅ auth-service 완전 분리 (로그인·JWT·/auth/verify) + 게이트웨이 + monolith에서 auth 제거
-- **Phase 2** ✅ contact-service + notification-service (문의→알림, REST)
-- **Phase 6** 🔵 착수 — 부하테스트(k6) + 관측성(Prometheus/Grafana) **코드만** 작성, 실측정 대기
+- **Phase 2** ✅ contact-service + notification-service (문의→알림, REST) + Dockerfile 2종 추가
+- **Phase 3** ✅ content-service 완전 구현 — 엔티티 5종·Repository·Service·Controller·DataInitializer·Dockerfile·compose 통합 기동 검증
+- **Phase 6** 🔵 진행 — k6 실측 완료 (TPS 44.7, p95 744ms, 에러율 0%) + gateway 포트 충돌 해소(8090)
 
-## ▶ 다음 세션 시작점 (clone/pull 후 여기부터)
+## ▶ 다음 세션 시작점
 
-**최우선: Phase 6 실탄 완성 — 자소서의 "대용량 트래픽" 갭을 실측 수치로 메우는 작업.**
+**Phase 6 실탄 계속:**
+1. `cd infra && docker compose up -d --build` → 컨테이너 기동 (name: k-msa-platform 고정)
+2. k6 게이트웨이 경유 재측: `k6 run infra/load-test/auth-login.js` (gateway 포트 8090)
+3. Grafana(localhost:3000) → Prometheus 데이터소스 → 서비스별 패널 스크린샷
+4. Zipkin 분산 트레이싱 착수
+5. Resilience4j — contact→notification 호출에 타임아웃/서킷브레이커
 
-1. `cd infra && docker compose up -d --build` → 8개 컨테이너 기동 확인
-   (postgres·auth·monolith·gateway·contact·notification·prometheus·grafana)
-2. `k6 run infra/load-test/auth-login.js` → `infra/load-test/README.md` 측정표에 TPS/p95/에러율 기록
-3. Grafana(localhost:3000, admin/admin) → Prometheus 연결 → 서비스별 패널 → 스크린샷
-4. 분산 트레이싱(Zipkin) 착수 — `platform/observability/PLAN.md` 참고
-5. 회복탄력성(Resilience4j) — contact→notification 호출에 타임아웃/서킷브레이커
+**그다음:**
+- Phase 4: blog-service 통합
+- Phase 5: analytics-service + budget 편입
 
-그다음: Phase 3(content 분리) → Phase 4(blog) → Phase 5(analytics+budget).
-상세·이유는 `INTEGRATION_PLAN.md` §6 참조.
+**이미 완료된 것 (재작업 금지):**
+- Phase 0~3: 모두 기동 검증 완료
+- k6 auth-service 직접 실측: TPS 44.7, p95 744ms, 에러율 0% (8,081건)
+
+**포트 주의 (로컬 환경):**
+- gateway: 8090 (Caddy가 80/443 점유 — k-devops.duckdns.org)
+- auth-service: 8081 (직접), /api/auth/* (gateway 경유)
+- content-service: 8084
+- contact-service: 8085
+- openclaw-msa compose: name=openclaw-msa, ports 8083/8082/8081/8089
 
 ## 자기소개서 (네이버웹툰 등)
 

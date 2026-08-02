@@ -31,7 +31,8 @@ export const options = {
 };
 
 // [왜] 게이트웨이 단일 진입점으로 요청(실전과 동일 경로). 환경변수로 대상 주소 변경 가능.
-const BASE = __ENV.BASE_URL || 'http://localhost';
+// [로컬] Caddy가 port 80 점유 → gateway를 8090으로 변경(docker-compose 기준). 운영은 80.
+const BASE = __ENV.BASE_URL || 'http://localhost:8090';
 
 export default function () {
   const payload = JSON.stringify({ username: 'admin', password: 'admin123' });
