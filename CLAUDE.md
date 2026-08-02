@@ -31,9 +31,19 @@
 
 - **Phase 0** ✅ K-portfolio 모놀리스 흡수 → `apps/portfolio/monolith/`
 - **Phase 1** ✅ auth-service 완전 분리 (로그인·JWT·/auth/verify) + 게이트웨이 + monolith에서 auth 제거
-- **Phase 2** ✅ contact-service + notification-service (문의→알림, REST) + Dockerfile 2종 추가
-- **Phase 3** ✅ content-service 완전 구현 — 엔티티 5종·Repository·Service·Controller·DataInitializer·Dockerfile·compose 통합 기동 검증
-- **Phase 6** 🔵 진행 — k6 실측 완료 (TPS 44.7, p95 744ms, 에러율 0%) + gateway 포트 충돌 해소(8090)
+- **Phase 2** ✅ contact-service + notification-service (문의→알림, REST) + Dockerfile + Resilience4j 서킷브레이커
+- **Phase 3** ✅ content-service (엔티티 5종·CRUD·DataInitializer) — 기동 검증 완료
+- **Phase 4** 🔵 blog-service (BlogPost·예약발행 스케줄러·PostingClient dry-run) — @DEEP Tistory/Velog 실 API
+- **Phase 5** 🔵 analytics-service (Visitor 기록·통계) — 기동 검증 완료
+- **Phase 6** 🔵 진행 중
+  - ✅ k6 실측: auth-direct TPS 44.7 p95 744ms / gateway TPS 42.9 p95 1.29s / 에러율 0%
+  - ✅ Prometheus 6서비스 ALL UP (auth·content·contact·blog·analytics·notification)
+  - ✅ Grafana 대시보드 자동 프로비저닝 (TPS·p95·에러율·서킷브레이커 패널)
+  - ✅ Resilience4j 서킷브레이커 (contact→notification, CLOSED/OPEN/HALF-OPEN)
+  - ⬜ Zipkin 분산 트레이싱 (@DEEP)
+- ✅ **Jenkinsfile**: 6서비스 병렬 빌드·테스트·Docker·K8s Rolling Update
+- ✅ **증거 캡처**: `infra/evidence/capture-evidence.sh`
+- ✅ **k-devops.duckdns.org** (K-portfolio 사이트): k-msa-platform 프로젝트 추가됨 (id=9)
 
 ## ▶ 다음 세션 시작점
 

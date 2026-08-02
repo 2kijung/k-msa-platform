@@ -27,9 +27,11 @@ COPY --from=builder /build/target/portfolio-backend-1.0.0.jar app.jar
 EXPOSE 8080
 
 # Health check
-# [수정] amazoncorretto alpine의 BusyBox wget은 --spider 미지원 → wget -q -O /dev/null 사용
+# [수정] monolith 공개 API 사용 (auth_request 불필요, Spring Security permitAll 경로)
+# /api/auth/health는 auth 제거 후 403 반환, /actuator는 SPA index.html 반환
+# → /api/projects로 변경 (GET, permitAll)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget -q -O /dev/null http://localhost:8080/api/auth/health || exit 1
+    CMD wget -q -O /dev/null http://localhost:8080/api/projects || exit 1
 
 # Run application (prod profile activates PostgreSQL datasource)
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
