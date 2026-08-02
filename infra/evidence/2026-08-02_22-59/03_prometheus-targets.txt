@@ -1,0 +1,6 @@
+[UP  ] analytics-service              analytics-service:8087
+[UP  ] auth-service                   auth-service:8081
+[UP  ] blog-service                   blog-service:8086
+[UP  ] contact-service                contact-service:8085
+[UP  ] content-service                content-service:8084
+[UP  ] notification-service           notification:8083

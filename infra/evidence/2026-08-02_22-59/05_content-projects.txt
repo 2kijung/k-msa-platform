@@ -1,0 +1,9 @@
+[1] K-portfolio — 개인 포트폴리오 DevOps 운영
+     Technologies: Spring Boot 3.2, React 19, PostgreSQL, Docker, Kubernetes, Jenkins, Prometheus, Grafana
+
+[2] k-msa-platform — Strangler Fig MSA 전환 플랫폼
+     Technologies: Spring Boot 3.2, Nginx API Gateway, PostgreSQL, Docker Compose, Prometheus, Grafana, k6
+
+[3] openclaw-msa — 가계부·블로그 자동화 MSA
+     Technologies: Spring Framework 5.3, Maven Multi-module, PostgreSQL, Spring Batch, Nginx, Kubernetes, Jenkins
+

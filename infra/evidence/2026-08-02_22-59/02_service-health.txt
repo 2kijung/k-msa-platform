@@ -1,0 +1,14 @@
+=== auth-service ===
+{"success":true,"message":"OK","data":"auth-service is running"}
+=== content-service ===
+{"status":"content-service is running"}
+=== contact-service ===
+{"success":true,"message":"OK","data":"contact-service is running"}
+=== blog-service ===
+{"status":"blog-service is running"}
+=== analytics-service ===
+{"status":"analytics-service is running"}
+=== notification-service ===
+notification-service is running
+=== gateway auth (port 8090) ===
+{"success":true,"message":"OK","data":"auth-service is running"}

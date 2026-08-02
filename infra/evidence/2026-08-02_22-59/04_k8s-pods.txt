@@ -1,0 +1,6 @@
+NAME                                  READY   STATUS    RESTARTS       AGE
+portfolio-backend-5768c84fdb-s7tx7    1/1     Running   2 (7d5h ago)   21d
+portfolio-backend-5768c84fdb-w2j2b    1/1     Running   2 (7d5h ago)   21d
+portfolio-frontend-569898ffb6-25d75   1/1     Running   3 (7d5h ago)   21d
+portfolio-frontend-569898ffb6-5qg4c   1/1     Running   3 (7d5h ago)   21d
+postgres-0                            1/1     Running   1 (7d5h ago)   22d
