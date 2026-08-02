@@ -34,8 +34,13 @@ scrape_configs:
   - job_name: 'blog-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      # [Phase 4] 블로그 포스트 + 자동발행
       - targets: ['blog-service:8086']
+
+  - job_name: 'analytics-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # [Phase 5] 방문자 통계
+      - targets: ['analytics-service:8087']
 
   # [주의] monolith(K-portfolio)는 actuator prometheus 노출이 prod에서 health/info만 열려 있음.
   #        @DEEP monolith application-prod.yml 의 exposure에 prometheus 추가하면 여기에 job 추가.

@@ -20,7 +20,8 @@ CREATE SCHEMA IF NOT EXISTS contact;       -- contact-service (Phase 2)
 GRANT ALL ON SCHEMA contact TO kmsa;
 CREATE SCHEMA IF NOT EXISTS blog;          -- blog-service (Phase 4)
 GRANT ALL ON SCHEMA blog TO kmsa;
--- CREATE SCHEMA IF NOT EXISTS analytics;  -- analytics-service (Visitor) Phase 5
+CREATE SCHEMA IF NOT EXISTS analytics;     -- analytics-service (Visitor) Phase 5
+GRANT ALL ON SCHEMA analytics TO kmsa;
 
 -- [왜] kmsa 계정에 스키마 사용 권한 부여(초기 계정이 소유자라 보통 자동이나 명시).
 GRANT ALL ON SCHEMA auth TO kmsa;
