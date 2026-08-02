@@ -8,11 +8,10 @@
 # [왜/MSA] postgres 인스턴스는 하나지만, 서비스마다 '스키마'로 격리한다(auth/content/...).
 #          이상적인 'DB per service'의 리소스 현실적 절충. 스키마 경계로 서비스 간 데이터를 분리.
 # [어떻게] docker compose up -d 한 방으로 DB가 뜬다. auth-service는 이 DB에 붙는다.
-# [주의] openclaw-msa/infra/docker-compose.yml과 같은 'infra' 폴더명 충돌 방지: name 고정.
+# [주의] openclaw-msa/infra/docker-compose.yml 과 같은 'infra' 폴더명 → 프로젝트명 동일.
+#         openclaw-msa는 name: openclaw-msa 로 고정했으므로 여기선 name 불필요.
+#         (Docker Compose는 폴더명(infra)을 프로젝트명으로 사용 → 이미 구분됨)
 # ============================================================================
-
-name: k-msa-platform
-
 services:
   postgres:
     # [왜] alpine = 경량 이미지. 16 = 최신 안정 메이저(K-portfolio도 16 사용, 버전 일치)
