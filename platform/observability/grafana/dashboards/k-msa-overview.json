@@ -1,0 +1,121 @@
+{
+  "__inputs": [{"name": "DS_PROMETHEUS","label": "Prometheus","description": "","type": "datasource","pluginId": "prometheus"}],
+  "__elements": {},
+  "__requires": [{"type": "grafana","id": "grafana","name": "Grafana","version": "11.2.0"},{"type": "datasource","id": "prometheus","name": "Prometheus","version": "1.0.0"}],
+  "annotations": {"list": [{"builtIn": 1,"datasource": {"type": "grafana","uid": "-- Grafana --"},"enable": true,"hide": true,"iconColor": "rgba(0, 211, 255, 1)","name": "Annotations & Alerts","type": "dashboard"}]},
+  "description": "k-msa-platform 서비스 개요 — HTTP 처리량·지연·에러율 (Phase 6)",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1,"w": 24,"x": 0,"y": 0},
+      "id": 10,
+      "title": "서비스별 HTTP 처리량 (TPS)",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"axisBorderShow": false,"axisCenteredZero": false,"axisColorMode": "text","axisLabel": "req/s","axisPlacement": "auto","barAlignment": 0,"drawStyle": "line","fillOpacity": 10,"gradientMode": "none","hideFrom": {"legend": false,"tooltip": false,"viz": false},"lineInterpolation": "linear","lineWidth": 2,"pointSize": 5,"scaleDistribution": {"type": "linear"},"showPoints": "never","spanNulls": false,"stacking": {"group": "A","mode": "none"},"thresholdsStyle": {"mode": "off"}},
+          "mappings": [],
+          "thresholds": {"mode": "absolute","steps": [{"color": "green","value": null}]},
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8,"w": 12,"x": 0,"y": 1},
+      "id": 1,
+      "options": {"legend": {"calcs": ["mean","max"],"displayMode": "table","placement": "bottom","showLegend": true},"tooltip": {"mode": "multi","sort": "none"}},
+      "targets": [
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"auth-service\"}[1m])","legendFormat": "auth-service"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"content-service\"}[1m])","legendFormat": "content-service"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"contact-service\"}[1m])","legendFormat": "contact-service"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"blog-service\"}[1m])","legendFormat": "blog-service"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"analytics-service\"}[1m])","legendFormat": "analytics-service"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"notification-service\"}[1m])","legendFormat": "notification-service"}
+      ],
+      "title": "HTTP 처리량 (req/s)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"axisBorderShow": false,"axisCenteredZero": false,"axisColorMode": "text","axisLabel": "ms","axisPlacement": "auto","barAlignment": 0,"drawStyle": "line","fillOpacity": 10,"gradientMode": "none","hideFrom": {"legend": false,"tooltip": false,"viz": false},"lineInterpolation": "linear","lineWidth": 2,"pointSize": 5,"scaleDistribution": {"type": "linear"},"showPoints": "never","spanNulls": false,"stacking": {"group": "A","mode": "none"},"thresholdsStyle": {"mode": "line","steps": [{"color": "transparent","value": null},{"color": "red","value": 500}]}},
+          "mappings": [],
+          "thresholds": {"mode": "absolute","steps": [{"color": "green","value": null},{"color": "red","value": 500}]},
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8,"w": 12,"x": 12,"y": 1},
+      "id": 2,
+      "options": {"legend": {"calcs": ["mean","max"],"displayMode": "table","placement": "bottom","showLegend": true},"tooltip": {"mode": "multi","sort": "none"}},
+      "targets": [
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{application=\"auth-service\"}[1m])) by (le)) * 1000","legendFormat": "auth-service p95"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{application=\"content-service\"}[1m])) by (le)) * 1000","legendFormat": "content-service p95"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{application=\"contact-service\"}[1m])) by (le)) * 1000","legendFormat": "contact-service p95"}
+      ],
+      "title": "응답시간 p95 (ms) — SLO 500ms",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"axisBorderShow": false,"axisCenteredZero": false,"axisColorMode": "text","axisLabel": "%","axisPlacement": "auto","barAlignment": 0,"drawStyle": "line","fillOpacity": 5,"gradientMode": "none","hideFrom": {"legend": false,"tooltip": false,"viz": false},"lineInterpolation": "linear","lineWidth": 2,"pointSize": 5,"scaleDistribution": {"type": "linear"},"showPoints": "never","spanNulls": false,"stacking": {"group": "A","mode": "none"},"thresholdsStyle": {"mode": "line","steps": [{"color": "transparent","value": null},{"color": "red","value": 1}]}},
+          "mappings": [],
+          "thresholds": {"mode": "absolute","steps": [{"color": "green","value": null},{"color": "red","value": 1}]},
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8,"w": 12,"x": 0,"y": 9},
+      "id": 3,
+      "options": {"legend": {"calcs": ["mean","max"],"displayMode": "table","placement": "bottom","showLegend": true},"tooltip": {"mode": "multi","sort": "none"}},
+      "targets": [
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"auth-service\",status!~\"2..\"}[1m]) / rate(http_server_requests_seconds_count{application=\"auth-service\"}[1m]) * 100","legendFormat": "auth-service 에러율"},
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "rate(http_server_requests_seconds_count{application=\"contact-service\",status!~\"2..\"}[1m]) / rate(http_server_requests_seconds_count{application=\"contact-service\"}[1m]) * 100","legendFormat": "contact-service 에러율"}
+      ],
+      "title": "에러율 (%) — SLO 1% 미만",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [{"options": {"closed": {"color": "green","index": 0,"text": "CLOSED (정상)"},"half_open": {"color": "yellow","index": 1,"text": "HALF-OPEN"},"open": {"color": "red","index": 2,"text": "OPEN (차단)"}},"type": "value"}],
+          "thresholds": {"mode": "absolute","steps": [{"color": "green","value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8,"w": 12,"x": 12,"y": 9},
+      "id": 4,
+      "options": {"colorMode": "background","graphMode": "none","justifyMode": "center","orientation": "auto","reduceOptions": {"calcs": ["lastNotNull"],"fields": "","values": false},"textMode": "auto"},
+      "targets": [
+        {"datasource": {"type": "prometheus","uid": "${DS_PROMETHEUS}"},"expr": "resilience4j_circuitbreaker_state{name=\"notification\",application=\"contact-service\"}","legendFormat": "contact→notification 서킷"}
+      ],
+      "title": "서킷브레이커 상태 (contact→notification)",
+      "type": "stat"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["k-msa-platform","Phase6"],
+  "templating": {"list": [{"current": {},"hide": 0,"includeAll": false,"label": "데이터소스","multi": false,"name": "DS_PROMETHEUS","options": [],"query": "prometheus","refresh": 1,"regex": "","type": "datasource"}]},
+  "time": {"from": "now-30m","to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "k-msa-platform — 서비스 개요",
+  "uid": "kmsa-overview",
+  "version": 1
+}

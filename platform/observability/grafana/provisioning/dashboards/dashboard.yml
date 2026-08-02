@@ -1,0 +1,11 @@
+# Grafana 대시보드 프로비저닝 설정
+apiVersion: 1
+
+providers:
+  - name: 'k-msa-platform'
+    orgId: 1
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards

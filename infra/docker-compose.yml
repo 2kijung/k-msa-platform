@@ -226,6 +226,10 @@ services:
       - prometheus
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin   # [데모] 로컬 전용 비번
+    volumes:
+      # [Phase 6] 프로비저닝: 재기동 시 Prometheus 데이터소스 + 대시보드 자동 구성
+      - ../platform/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../platform/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"   # [왜] Grafana UI. http://localhost:3000 (admin/admin)
 
