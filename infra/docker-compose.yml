@@ -210,6 +210,10 @@ services:
     container_name: kmsa-prometheus
     volumes:
       - ../platform/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    # [왜] --web.enable-lifecycle: POST /-/reload 로 설정 무중단 리로드 가능
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-lifecycle'
     ports:
       - "9091:9090"   # [왜] Prometheus UI. http://localhost:9090
 
