@@ -32,6 +32,35 @@ management:
   metrics:
     tags:
       application: contact-service
+  # [Phase 6] 서킷브레이커 상태를 actuator/health에 포함
+  health:
+    circuitbreakers:
+      enabled: true
+
+# ─── Resilience4j 서킷브레이커 설정 (Phase 6) ─────────────────────────────
+# [무엇을] notification-service 호출 실패 시 서킷을 열어 연쇄 장애를 차단한다.
+# [왜/MSA] 분산 시스템에서 notification이 느려지면 contact의 스레드가 모두 대기 → 전체 장애.
+#          서킷브레이커가 이를 감지하고 즉시 fallback → 본 흐름(문의 접수) 보호.
+resilience4j:
+  circuitbreaker:
+    instances:
+      notification:
+        # 슬라이딩 윈도우 10건 중 50% 이상 실패 시 OPEN
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        # OPEN 상태에서 5초 후 HALF-OPEN → 3건 시도
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        # 예외를 실패로 기록
+        record-exceptions:
+          - org.springframework.web.client.RestClientException
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+  timelimiter:
+    instances:
+      notification:
+        # [왜] 알림 서비스 응답 대기 최대 2초. 초과 시 즉시 fallback.
+        timeout-duration: 2s
 
 ---
 spring:

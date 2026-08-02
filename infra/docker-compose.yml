@@ -115,6 +115,27 @@ services:
     ports:
       - "8084:8084"
 
+  # ── blog-service (블로그 포스트 + 자동발행, Phase 4) ─────────────────────
+  blog-service:
+    # [왜/MSA] Phase 4 — monolith에서 BlogPost·DevNote 분리.
+    #          자동발행(Tistory·Velog) 스케줄러가 독립 배포 주기로 동작.
+    build:
+      context: ../apps/blog
+    container_name: kmsa-blog
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: kmsa
+      DB_USER: kmsa
+      DB_PASSWORD: kmsa1234
+      TISTORY_TSSESSION: ${TISTORY_TSSESSION:-}
+      VELOG_ACCESS_TOKEN: ${VELOG_ACCESS_TOKEN:-}
+    ports:
+      - "8086:8086"
+
   # ── contact-service (문의 접수 + 알림, Phase 2) ─────────────────────────
   contact-service:
     build:

@@ -14,12 +14,13 @@
 CREATE SCHEMA IF NOT EXISTS auth;
 
 -- ── 향후 서비스 확장 시 여기에 스키마를 추가한다 (지금은 주석으로 예약) ──
-CREATE SCHEMA IF NOT EXISTS portfolio;     -- portfolio-content-service (Project/Career/Skill/Cert/Profile) Phase 3
+CREATE SCHEMA IF NOT EXISTS portfolio;     -- portfolio-content-service (Phase 3)
 GRANT ALL ON SCHEMA portfolio TO kmsa;
 CREATE SCHEMA IF NOT EXISTS contact;       -- contact-service (Phase 2)
 GRANT ALL ON SCHEMA contact TO kmsa;
+CREATE SCHEMA IF NOT EXISTS blog;          -- blog-service (Phase 4)
+GRANT ALL ON SCHEMA blog TO kmsa;
 -- CREATE SCHEMA IF NOT EXISTS analytics;  -- analytics-service (Visitor) Phase 5
--- CREATE SCHEMA IF NOT EXISTS blog;       -- blog-service Phase 4
 
 -- [왜] kmsa 계정에 스키마 사용 권한 부여(초기 계정이 소유자라 보통 자동이나 명시).
 GRANT ALL ON SCHEMA auth TO kmsa;

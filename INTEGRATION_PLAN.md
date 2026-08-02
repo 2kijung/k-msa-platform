@@ -117,7 +117,7 @@ openclaw-msa/  (플랫폼 루트)
 | **1** | platform/auth 분리 (인증 중앙화) + 게이트웨이 라우팅 | ✅ 코드 완료 (07-24) · 도커 실행검증만 보류 |
 | **2** | apps/portfolio/contact + 알림 연동 | ✅ 코드 완료 (07-24) — contact-service + notification-service(REST) + compose·게이트웨이 통합. 이벤트(messaging) 전환은 Phase 6, 도커 실행검증 보류 |
 | **3** | apps/portfolio/content 분리 | ✅ 코드 완료 (08-02) — content-service 기동 검증(projects/profile API 정상) |
-| **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | ⬜ 예정 |
+| **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | 🔵 착수 (08-02) — blog-service 코드 완성, dry-run 모드(실 API @DEEP) |
 | **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | ⬜ 예정 |
 | **6** | 관측성·트레이싱·회복탄력성 + 부하테스트 + infra + 전환/확장 스토리 | 🔵 착수 (07-24) — 부하테스트(k6) + 관측성(Prometheus+Grafana compose 통합) 작성. 실행측정·분산트레이싱·회복탄력성(Resilience4j)은 다음 |
 

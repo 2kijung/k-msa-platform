@@ -17,8 +17,8 @@ k6 run load-test/auth-login.js
 
 | 날짜 | 시나리오 | VU | TPS | p(95) | 에러율 | SLO | 비고 |
 |---|---|---|---|---|---|---|---|
-| **2026-08-02** | 로그인 — auth-service 직접 (기준선) | 100 | **44.7 req/s** | **744ms** | **0.00%** | ❌ p95 초과 | auth-direct.js, Caddy 충돌로 게이트웨이 우회 |
-| 2026-08-02 이후 | 로그인 — 게이트웨이(:8090) 경유 | 100 | @DEEP | @DEEP | @DEEP | - | gateway 포트 8090 확인 후 재측 |
+| **2026-08-02** | 로그인 — auth-service 직접 | 100 | **44.7 req/s** | **744ms** | **0.00%** | ❌ p95 초과 | auth-direct.js, 직접 8081 |
+| **2026-08-02** | 로그인 — Nginx 게이트웨이 경유(:8090) | 100 | **42.9 req/s** | **1.29s** | **0.00%** | ❌ p95 초과 | auth-login.js, Nginx proxy 포함 |
 | 미정 | 로그인 (K8s HPA 적용) | 100 | @DEEP | @DEEP | @DEEP | - | K8s HPA 연동 후 측정 |
 
 ### 2026-08-02 실측 상세 (auth-direct.js)

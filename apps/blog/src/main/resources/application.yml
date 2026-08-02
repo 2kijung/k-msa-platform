@@ -1,0 +1,53 @@
+# blog-service / application.yml
+# [왜/MSA] 포트 8086. 스키마: blog. BlogPost·DevNote 소유.
+# @PHASE:4
+server:
+  port: 8086
+spring:
+  application:
+    name: blog-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kmsa}?currentSchema=blog
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:kmsa}
+    password: ${DB_PASSWORD:kmsa1234}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: blog
+  # [왜] 스케줄러: 예약 발행(@Scheduled). Spring Boot는 기본 비활성.
+  task:
+    scheduling:
+      enabled: true
+
+# 외부 발행 설정 (비어 있으면 실제 전송 건너뜀)
+blog:
+  tistory:
+    ts-session: ${TISTORY_TSSESSION:}
+    blog-name: ${TISTORY_BLOG_NAME:dlrlwjd1313}
+  velog:
+    access-token: ${VELOG_ACCESS_TOKEN:}
+    username: ${VELOG_USERNAME:dlrlwjd1313}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: blog-service
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:blogdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
