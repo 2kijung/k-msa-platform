@@ -88,6 +88,16 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
+        <!-- [Phase 6] Zipkin 분산 트레이싱 — Micrometer Tracing + Brave reporter -->
+        <!-- [왜/MSA] 서비스 간 요청이 어떤 경로로 흘렀는지 traceId로 추적. "분산 트레이싱" 증명. -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

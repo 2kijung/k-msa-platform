@@ -61,6 +61,7 @@ services:
       DB_PASSWORD: kmsa1234
       # [보안] JWT 서명키 주입. 로컬 데모용 — 운영에선 K8s Secret으로 주입.
       JWT_SECRET: local-dev-only-secret-change-me-please-32bytes-min
+      ZIPKIN_HOST: zipkin   # [Phase 6] Zipkin 트레이싱 수집 서버 호스트 (컨테이너 DNS)
     ports:
       # [왜] 호스트 8081 → 컨테이너 8081. 게이트웨이/개발자가 이 포트로 auth에 접근.
       - "8081:8081"
@@ -112,6 +113,7 @@ services:
       DB_NAME: kmsa
       DB_USER: kmsa
       DB_PASSWORD: kmsa1234
+      ZIPKIN_HOST: zipkin
     ports:
       - "8084:8084"
 
@@ -129,6 +131,7 @@ services:
       DB_NAME: kmsa
       DB_USER: kmsa
       DB_PASSWORD: kmsa1234
+      ZIPKIN_HOST: zipkin
     ports:
       - "8087:8087"
 
@@ -150,6 +153,7 @@ services:
       DB_PASSWORD: kmsa1234
       TISTORY_TSSESSION: ${TISTORY_TSSESSION:-}
       VELOG_ACCESS_TOKEN: ${VELOG_ACCESS_TOKEN:-}
+      ZIPKIN_HOST: zipkin
     ports:
       - "8086:8086"
 
@@ -170,6 +174,7 @@ services:
       # [왜] 알림 서비스 URL. notification-service 미기동 시 호출은 실패하나
       #      문의 접수 본흐름은 정상(NotificationClient가 실패를 삼킴).
       NOTIFICATION_URL: http://notification:8083
+      ZIPKIN_HOST: zipkin
     ports:
       - "8085:8085"
 
@@ -183,6 +188,7 @@ services:
       # [왜] 봇 설정이 비면 실제 전송은 건너뛰고 로그만 → 데모 시 토큰 없이도 안전하게 흐름 확인 가능
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      ZIPKIN_HOST: zipkin
     ports:
       - "8083:8083"
 
@@ -202,6 +208,15 @@ services:
       #           게이트웨이 기능(라우팅·auth_request) 검증은 동일, 포트만 다름.
       #           운영(K8s)에서는 Ingress가 80/443 담당 → 이 포트는 로컬 전용.
       - "8090:80"
+
+  # ── zipkin (분산 트레이싱, Phase 6) ────────────────────────────────────
+  zipkin:
+    # [왜/MSA] 서비스 간 호출 흐름을 traceId 하나로 추적. "auth→contact→notification" 경로가
+    #          Zipkin UI 타임라인에 시각화된다. 서비스명 'zipkin'이 곧 컨테이너 내 DNS 호스트.
+    image: openzipkin/zipkin:3
+    container_name: kmsa-zipkin
+    ports:
+      - "9411:9411"   # [왜] Zipkin UI. http://localhost:9411
 
   # ── prometheus (메트릭 수집) ────────────────────────────────────────────
   prometheus:

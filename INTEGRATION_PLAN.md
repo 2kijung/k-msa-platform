@@ -119,7 +119,7 @@ openclaw-msa/  (플랫폼 루트)
 | **3** | apps/portfolio/content 분리 | ✅ 코드 완료 (08-02) — content-service 기동 검증(projects/profile API 정상) |
 | **4** | apps/blog 통합 (엔티티 + 자동발행) — 앱 추가 확장성 첫 시연 | 🔵 착수 (08-02) — blog-service 코드 완성, dry-run 모드(실 API @DEEP) |
 | **5** | apps/portfolio/analytics 분리 + apps/budget 편입 (2번째 도메인 = 확장성 증거) | 🔵 착수 (08-02) — analytics-service 코드 완성, budget 편입은 @DEEP |
-| **6** | 관측성·트레이싱·회복탄력성 + 부하테스트 + infra + 전환/확장 스토리 | 🔵 진행 (08-02) — k6 실측·Resilience4j·Prometheus 6서비스·Grafana 대시보드 완성. Zipkin @DEEP. |
+| **6** | 관측성·트레이싱·회복탄력성 + 부하테스트 + infra + 전환/확장 스토리 | ✅ 완료 (08-08) — k6 실측·Resilience4j·Prometheus 6서비스·Grafana 대시보드·Zipkin 분산 트레이싱 완성 |
 
 ### Phase 6 세부 진행 (착수 — 대용량/관측성 실탄)
 | 항목 | 상태 |
@@ -130,7 +130,7 @@ openclaw-msa/  (플랫폼 루트)
 | compose에 prometheus(9090)+grafana(3000) 통합 | ✅ 완료 (07-24) |
 | **실측정 실행** (`docker compose up` → `k6 run`) | ⬜ **다음 세션 최우선** — 도커 보류 풀리면 바로 |
 | Grafana 대시보드 패널 구성(서비스별 지연/에러율) | ⬜ 예정 |
-| 분산 트레이싱 (Zipkin/Tempo, traceId 전파) | ⬜ 예정 |
+| 분산 트레이싱 (Zipkin/Tempo, traceId 전파) | ✅ 완료 (08-08) — openzipkin:3, 6서비스 등록, contact→notification 3 spans 전파 검증 |
 | 회복탄력성 (Resilience4j: 타임아웃/재시도/서킷브레이커, contact→notification에 적용) | ⬜ 예정 |
 | 이벤트 기반 전환 (contact→notification REST를 messaging으로) | ⬜ 예정 (platform/messaging/PLAN.md 참조) |
 

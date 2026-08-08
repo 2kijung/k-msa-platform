@@ -30,6 +30,13 @@ management:
   metrics:
     tags:
       application: content-service
+  # [Phase 6] Zipkin 분산 트레이싱
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:zipkin}:9411/api/v2/spans
 
 ---
 # [왜] 테스트 프로필: 실물 DB 대신 H2 인메모리 사용(속도). 프로덕션은 위 기본 프로필.

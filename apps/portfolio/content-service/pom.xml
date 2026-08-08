@@ -32,6 +32,9 @@
         <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
         <!-- [왜] Prometheus Micrometer: 메트릭 노출(Phase 6 관측성) -->
         <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
+        <!-- [Phase 6] Zipkin 분산 트레이싱 -->
+        <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-tracing-bridge-brave</artifactId></dependency>
+        <dependency><groupId>io.zipkin.reporter2</groupId><artifactId>zipkin-reporter-brave</artifactId></dependency>
         <!-- [왜] PostgreSQL 드라이버 (runtime만 — 컴파일타임 불필요) -->
         <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
         <!-- [왜] 테스트 전용 인메모리 DB (실물 DB = prod parity) -->

@@ -38,6 +38,9 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
+        <!-- [Phase 6] Zipkin 분산 트레이싱: contact→notification 호출 흐름을 traceId로 추적 -->
+        <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-tracing-bridge-brave</artifactId></dependency>
+        <dependency><groupId>io.zipkin.reporter2</groupId><artifactId>zipkin-reporter-brave</artifactId></dependency>
         <!-- [왜] AOP 없이 Resilience4j @CircuitBreaker 어노테이션 동작 안 함 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

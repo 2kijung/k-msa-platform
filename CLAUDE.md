@@ -40,19 +40,23 @@
   - ✅ Prometheus 6서비스 ALL UP (auth·content·contact·blog·analytics·notification)
   - ✅ Grafana 대시보드 자동 프로비저닝 (TPS·p95·에러율·서킷브레이커 패널)
   - ✅ Resilience4j 서킷브레이커 (contact→notification, CLOSED/OPEN/HALF-OPEN)
-  - ⬜ Zipkin 분산 트레이싱 (@DEEP)
+  - ✅ Zipkin 분산 트레이싱 (2026-08-08) — 6서비스 ALL 등록, contact→notification 3 spans 전파 검증
 - ✅ **Jenkinsfile**: 6서비스 병렬 빌드·테스트·Docker·K8s Rolling Update
 - ✅ **증거 캡처**: `infra/evidence/capture-evidence.sh`
 - ✅ **k-devops.duckdns.org** (K-portfolio 사이트): k-msa-platform 프로젝트 추가됨 (id=9)
 
 ## ▶ 다음 세션 시작점
 
-**Phase 6 실탄 계속:**
-1. `cd infra && docker compose up -d --build` → 컨테이너 기동 (name: k-msa-platform 고정)
-2. k6 게이트웨이 경유 재측: `k6 run infra/load-test/auth-login.js` (gateway 포트 8090)
-3. Grafana(localhost:3000) → Prometheus 데이터소스 → 서비스별 패널 스크린샷
-4. Zipkin 분산 트레이싱 착수
-5. Resilience4j — contact→notification 호출에 타임아웃/서킷브레이커
+**Phase 6 완료 확인:**
+- Zipkin UI: http://localhost:9411 (contact→notification 3 spans 확인 가능)
+- Grafana: http://localhost:3000 (admin/admin)
+- Prometheus: http://localhost:9091
+
+**남은 작업:**
+1. Grafana 대시보드 + Zipkin UI 브라우저 스크린샷 (수동) → `infra/evidence/` 저장
+2. blog-service Tistory/Velog 실 API (@DEEP)
+3. analytics-service + budget 편입 (@DEEP)
+4. k6 HPA 전/후 비교 측정
 
 **그다음:**
 - Phase 4: blog-service 통합

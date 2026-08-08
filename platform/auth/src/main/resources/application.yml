@@ -55,6 +55,15 @@ management:
   metrics:
     tags:
       application: auth-service
+  # [Phase 6] Zipkin 분산 트레이싱
+  # [왜/MSA] 서비스 간 요청이 어떤 경로로 흘렀는지 traceId 하나로 추적.
+  #          gateway→auth, contact→notification 흐름을 Zipkin UI에서 시각화 가능.
+  tracing:
+    sampling:
+      probability: 1.0   # [데모] 전량 샘플링. 운영은 0.1~0.5 권장.
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:zipkin}:9411/api/v2/spans
 
 ---
 # ============================================================================

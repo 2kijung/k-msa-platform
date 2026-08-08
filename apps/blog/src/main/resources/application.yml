@@ -39,6 +39,13 @@ management:
   metrics:
     tags:
       application: blog-service
+  # [Phase 6] Zipkin 분산 트레이싱
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:zipkin}:9411/api/v2/spans
 
 ---
 spring:

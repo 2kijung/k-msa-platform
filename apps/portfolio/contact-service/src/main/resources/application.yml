@@ -36,6 +36,13 @@ management:
   health:
     circuitbreakers:
       enabled: true
+  # [Phase 6] Zipkin 분산 트레이싱: contact→notification 호출 흐름을 traceId로 추적
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:zipkin}:9411/api/v2/spans
 
 # ─── Resilience4j 서킷브레이커 설정 (Phase 6) ─────────────────────────────
 # [무엇을] notification-service 호출 실패 시 서킷을 열어 연쇄 장애를 차단한다.
