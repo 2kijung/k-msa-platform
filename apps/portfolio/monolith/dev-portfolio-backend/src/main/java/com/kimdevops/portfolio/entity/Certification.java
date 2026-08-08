@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 /**
  * 자격증(Certification) 엔티티 = DB의 certifications 테이블
  */
+/**
+ * Certification 엔티티 — 모놀리스 레거시 (Phase 3 → content-service 이관됨).
+ * 게이트웨이 라우팅 전환 후에는 신규 서비스의 동일 이름 엔티티가 주체가 된다.
+ * @RISK  신규 서비스 엔티티와 필드가 다를 수 있음 — 이관 완료 후 이 클래스 삭제
+ */
 @Entity
 @Table(name = "certifications")
 public class Certification {

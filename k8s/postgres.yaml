@@ -1,0 +1,90 @@
+# k8s/postgres.yaml — K8s 개발용 PostgreSQL StatefulSet
+# [왜 StatefulSet] DB는 스테이트풀(상태 있음). Pod 재시작 시 동일 PVC(영속 볼륨)에 붙어야 데이터 유지.
+#                   Deployment는 스테이트리스(상태 없음) 서비스에 사용.
+# [왜 개발용] 운영에서는 AWS RDS / Cloud SQL 같은 관리형 DB 서비스를 사용한다.
+#             이 매니페스트는 로컬 minikube 개발 환경 전용.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: kmsa
+data:
+  # [왜] 서비스별 스키마 분리 (DB per Schema 패턴 — ADR-0002)
+  init.sql: |
+    CREATE SCHEMA IF NOT EXISTS auth;
+    CREATE SCHEMA IF NOT EXISTS portfolio;
+    CREATE SCHEMA IF NOT EXISTS contact;
+    CREATE SCHEMA IF NOT EXISTS blog;
+    CREATE SCHEMA IF NOT EXISTS analytics;
+    GRANT ALL ON SCHEMA auth, portfolio, contact, blog, analytics TO kmsa;
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: kmsa
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: kmsa
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-password
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "kmsa", "-d", "kmsa"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: postgres-init
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: kmsa
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

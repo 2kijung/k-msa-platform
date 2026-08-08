@@ -1,0 +1,27 @@
+=== K8s HPA 자동 확장 증거 (2026-08-08) ===
+
+환경: minikube v1.35.1 + metrics-server 활성화
+
+HPA 설정 (k8s/auth/hpa.yaml):
+  minReplicas: 2 | maxReplicas: 5
+  CPU 임계값: 50% | Memory 임계값: 70%
+
+관측 결과:
+  NAME               TARGETS                        MINPODS   MAXPODS   REPLICAS
+  auth-service-hpa   cpu: 5%/50%, memory: 79%/70%   2         5         3
+
+동작 근거:
+  - memory: 79% > 70% 임계값 초과
+  - HPA가 replicas 1 → 2 → 3으로 자동 확장
+  
+Pod 상태:
+  auth-service-65dc544db7-25wrt   0/1 Running (새로 생성됨)
+  auth-service-65dc544db7-bbrsb   1/1 Running
+  auth-service-65dc544db7-frpgj   1/1 Running
+  postgres-0                      1/1 Running
+
+결론:
+  K8s HPA가 메모리 사용률을 모니터링하다 70% 임계값 초과 시
+  자동으로 Pod를 추가 생성함 (Horizontal Pod Autoscaler 정상 동작 확인).
+  이것이 Docker Compose 대비 K8s의 핵심 차이:
+  "운영자가 수동으로 레플리카를 늘리는 것이 아니라, 메트릭에 따라 자동 확장"

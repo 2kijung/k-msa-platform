@@ -18,6 +18,16 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * RateLimitingFilter — Rate Limiting 필터 (초당 요청 수 제한).
+ *
+ * <p>Guava RateLimiter로 IP별 요청 수를 제한해 DDoS·크롤링을 방어한다.
+ * MSA 환경에서는 이 역할이 API 게이트웨이(Nginx rate_limit 또는 Kong)로 이동하는 것이 맞지만,
+ * 전환 기간 동안 monolith에서 1차 방어선으로 유지한다.</p>
+ *
+ * @FROM  K-portfolio 원본 보안 필터
+ * @RISK  Nginx 게이트웨이로 이동하면 이 필터는 제거 대상
+ */
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
