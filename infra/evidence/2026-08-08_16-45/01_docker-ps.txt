@@ -1,0 +1,19 @@
+NAMES                   STATUS                    PORTS
+openclaw-blog           Up 18 minutes (healthy)   0.0.0.0:9082->8080/tcp, [::]:9082->8080/tcp
+openclaw-notification   Up 18 minutes (healthy)   0.0.0.0:9083->8080/tcp, [::]:9083->8080/tcp
+openclaw-budget         Up 21 minutes (healthy)   0.0.0.0:9081->8080/tcp, [::]:9081->8080/tcp
+openclaw-gateway        Up 34 minutes             0.0.0.0:8089->80/tcp, [::]:8089->80/tcp
+openclaw-postgres       Up 35 minutes (healthy)   0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp
+kmsa-blog               Up 40 minutes (healthy)   0.0.0.0:8086->8086/tcp, [::]:8086->8086/tcp
+kmsa-analytics          Up 40 minutes (healthy)   0.0.0.0:8087->8087/tcp, [::]:8087->8087/tcp
+kmsa-contact            Up 50 minutes (healthy)   0.0.0.0:8085->8085/tcp, [::]:8085->8085/tcp
+kmsa-content            Up 52 minutes (healthy)   0.0.0.0:8084->8084/tcp, [::]:8084->8084/tcp
+kmsa-auth               Up 52 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+kmsa-notification       Up 52 minutes (healthy)   0.0.0.0:8083->8083/tcp, [::]:8083->8083/tcp
+kmsa-zipkin             Up 57 minutes (healthy)   9410/tcp, 0.0.0.0:9411->9411/tcp, [::]:9411->9411/tcp
+kmsa-monolith           Up 5 days (healthy)       0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+kmsa-grafana            Up 5 days                 0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+kmsa-prometheus         Up 5 days                 0.0.0.0:9091->9090/tcp, [::]:9091->9090/tcp
+kmsa-postgres           Up 5 days (healthy)       0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+kmsa-gateway            Up 5 days                 0.0.0.0:8090->80/tcp, [::]:8090->80/tcp
+minikube                Up 12 days                127.0.0.1:32768->22/tcp, 127.0.0.1:32769->2376/tcp, 127.0.0.1:32770->5000/tcp, 127.0.0.1:32771->8443/tcp, 127.0.0.1:32772->32443/tcp
