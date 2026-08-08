@@ -52,9 +52,15 @@
 - openclaw-msa: 5컨테이너 ALL healthy (budget·blog·notification·gateway·postgres)
 
 **남은 @DEEP 항목 (코드):**
-- blog-service Tistory/Velog 실 API 연동 (토큰 있으면 자동 발행)
-- K8s HPA 실제 측정 (`minikube addons enable metrics-server` → kubectl apply -f k8s/auth/hpa.yaml → k6 부하 → HPA 동작 확인)
+- blog-service Tistory/Velog 실 API 연동 (토큰 있으면 자동 발행 — PostingClient HTTP 구조 완성, 토큰만 없음)
+- K8s HPA: ✅ 실동작 확인 완료 (2026-08-08) — memory 79%>70% → Pod 1→3 자동 확장
+  - 증거: `infra/evidence/2026-08-08_hpa/`
 - Loki/ELK 중앙 로그 수집 (선택)
+
+**전체 Java 소스 주석 완성 (2026-08-08):**
+- k-msa-platform: auth·notification·contact·content·blog·analytics·monolith 전 파일
+- openclaw-msa: budget·blog·notification 전 파일 (Spring Framework 직접 배선 이유 상세)
+- 포함: @FROM @HOW @SCALE @RISK @PLAN @PHASE 마커 + 설계 결정 이유
 
 **완료된 것 (재작업 금지):**
 - Phase 0~6 전체: auth·contact·notification·content·blog·analytics 분리 + 기동 검증
