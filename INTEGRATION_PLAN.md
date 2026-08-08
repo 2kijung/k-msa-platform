@@ -169,6 +169,13 @@ openclaw-msa/  (플랫폼 루트)
   - compose + nginx 라우팅 통합
 - compose `name:` 추가 (k-msa-platform / openclaw-msa 프로젝트명 충돌 방지)
 
+**2026-08-08 세션 (Intel i9 머신):**
+- **k6 재측정** — 직접 96.1ms / 게이트웨이 97.95ms (100VU, 에러 0%, SLO 통과)
+  → **08-02의 "+550ms 프록시 병목"이 재현되지 않음 — 환경 종속으로 판정** (상세: `infra/load-test/README.md`)
+- **게이트웨이 keepalive 적용** — upstream 4곳 keepalive 32 + HTTP/1.1 + Connection 헤더 정리
+  (요청당 TCP 재연결 제거 — 이 머신에선 97.95→95.35ms로 차이 미미, 과장 없이 기록)
+- macOS 바인드 마운트 주의: nginx.conf를 호스트에서 편집하면 컨테이너가 절단된 옛 inode를 볼 수 있음 → `docker restart kmsa-gateway`로 재바인딩 후 reload
+
 ### ⬜ 다음 세션 시작점 (git pull 받고 바로 여기부터)
 **최우선 — Phase 6 실탄 완성 (자소서 대용량 갭을 메우는 작업)**:
 1. **도커 실행 검증** (지금까지 보류 중) — `cd infra && docker compose up -d --build` → 8개 컨테이너(postgres/auth/monolith/gateway/contact/notification/prometheus/grafana) 정상 기동 확인
@@ -185,6 +192,7 @@ openclaw-msa/  (플랫폼 루트)
 - **07-24** **auth 컨테이너화(Dockerfile+compose)를 Phase 1로 당김**. 원래 infra/Phase 6 성격이나 "실물 기동"을 조기 확보하려고.
 - **07-24** 도커 실행 검증은 **보류**(사용자: 나중에) — 다음 세션 최우선 항목으로 이월.
 - **07-24** **Phase 6(부하테스트+관측성)을 Phase 3~5보다 먼저 착수.** 원래 순서상 나중이나, "대용량 트래픽" JD 갭을 메우는 게 이직 관점에서 가장 시급하다고 판단해 순서를 앞당김. (자소서 §7 참조)
+- **08-08** "+550ms 프록시 병목 개선" 계획을 **"환경 종속 판정 + keepalive 구조 개선"으로 변경**. 이유: 다른 머신 재측정에서 병목이 재현되지 않아(직접 96ms vs 경유 98ms), 없는 병목을 "개선했다"고 쓰지 않기로 함. M4 Pro 환경 재검증이 남은 일.
 
 ### 미해결 결정
 - blog 스택 5-A/5-B (폴리글랏 방침이라 둘 다 가능). budget 편입 범위. 분산 트레이싱 도구(Zipkin vs Tempo).
