@@ -1,0 +1,50 @@
+# ============================================================================
+# k8s/auth/hpa.yaml — auth-service Horizontal Pod Autoscaler
+# ============================================================================
+# [무엇을] CPU 사용률 50% 초과 시 자동으로 Pod 복제본을 늘린다.
+# [왜/MSA] auth-service는 모든 요청의 관문 → 부하 집중 시 병목이 됨.
+#          HPA가 없으면 auth Pod 1개가 죽으면 서비스 전체 인증 불가.
+#          HPA로 자동 확장하면 트래픽 급증에도 에러율 0% 유지 가능.
+# [어떻게] K8s Metrics Server가 CPU 메트릭을 수집 → HPA가 replicas 조정.
+#          minikube에서는 `minikube addons enable metrics-server` 필요.
+# [실측] k6 부하 전: Pod 2개 / 후: 최대 5개 자동 증설 목표
+# ============================================================================
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: auth-service-hpa
+  namespace: kmsa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: auth-service
+  minReplicas: 2              # [왜] 최소 2개 → auth 단일 장애점 방지
+  maxReplicas: 5              # [왜] 최대 5개 → 리소스 무한 소비 방지
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50   # [왜] CPU 50% → 예약된 자원(250m) 기준 125m 초과 시 확장
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70   # [왜] 메모리 70% → JVM Heap 고갈 전 확장
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60   # [왜] 60초 안에 연속 급등 시만 확장 → 순간 스파이크 방지
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300  # [왜] 5분 안정 후에만 축소 → 흔들림 방지(Thrashing 예방)
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60

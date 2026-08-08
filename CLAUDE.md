@@ -45,18 +45,26 @@
 - ✅ **증거 캡처**: `infra/evidence/capture-evidence.sh`
 - ✅ **k-devops.duckdns.org** (K-portfolio 사이트): k-msa-platform 프로젝트 추가됨 (id=9)
 
-## ▶ 다음 세션 시작점
+## ▶ 다음 세션 시작점 (2026-08-08 기준)
 
-**Phase 6 완료 확인:**
-- Zipkin UI: http://localhost:9411 (contact→notification 3 spans 확인 가능)
-- Grafana: http://localhost:3000 (admin/admin)
-- Prometheus: http://localhost:9091
+**현재 동작 중인 서비스:**
+- k-msa-platform: 12컨테이너 ALL healthy (auth·content·contact·blog·analytics·notification·zipkin·prometheus·grafana·monolith·gateway·postgres)
+- openclaw-msa: 5컨테이너 ALL healthy (budget·blog·notification·gateway·postgres)
 
-**남은 작업:**
-1. Grafana 대시보드 + Zipkin UI 브라우저 스크린샷 (수동) → `infra/evidence/` 저장
-2. blog-service Tistory/Velog 실 API (@DEEP)
-3. analytics-service + budget 편입 (@DEEP)
-4. k6 HPA 전/후 비교 측정
+**남은 @DEEP 항목 (코드):**
+- blog-service Tistory/Velog 실 API 연동 (토큰 있으면 자동 발행)
+- K8s HPA 실제 측정 (`minikube addons enable metrics-server` → kubectl apply -f k8s/auth/hpa.yaml → k6 부하 → HPA 동작 확인)
+- Loki/ELK 중앙 로그 수집 (선택)
+
+**완료된 것 (재작업 금지):**
+- Phase 0~6 전체: auth·contact·notification·content·blog·analytics 분리 + 기동 검증
+- k6 실측: TPS 44.7 (auth 직접), 42.9 (gateway), 에러율 0%
+- Zipkin 분산 트레이싱: 6서비스 ALL UP, contact→notification 3 spans 전파
+- K8s HPA 매니페스트: `k8s/auth/hpa.yaml`, `k8s/{service}/deployment.yaml`
+- service-template 5단계 체크리스트 + 스켈레톤 코드: `platform/service-template/`
+- ADR 4개: 0001~0004 (Strangler Fig, 스키마 분리, Nginx, 동기 REST 우선)
+- scalability.md 5축 실측 데이터로 완성
+- openclaw-msa: 통합 기동 검증 완료 (포트 9081/9082/9083)
 
 **그다음:**
 - Phase 4: blog-service 통합

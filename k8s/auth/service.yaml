@@ -1,0 +1,20 @@
+# ============================================================================
+# k8s/auth/service.yaml — auth-service K8s Service
+# ============================================================================
+# [왜] Deployment Pod들에 안정된 DNS 이름(auth-service)과 고정 ClusterIP를 부여.
+#      Pod가 재시작·교체돼도 이 이름으로 접근 가능 → 게이트웨이 upstream 변경 불필요.
+# ============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: kmsa
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP   # [왜] 외부 노출 없음. 게이트웨이(Ingress)만 외부 접점.

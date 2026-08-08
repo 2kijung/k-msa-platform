@@ -71,10 +71,66 @@ grep -rn "@DEEP" .   # 아직 채우지 않은 지점 추적
 
 ---
 
-<!--
-@DEEP 이 README에 추후 추가:
-  - 아키텍처 다이어그램
-  - Grafana/Zipkin 스크린샷 (관측성 완성 후)
-  - 각 앱 실행 방법 (docker-compose)
-  - 계획 MD 내부 @LINK 경로를 새 구조(platform/apps)에 맞게 정합화
--->
+## 실행 방법
+
+```bash
+# 로컬 Docker Compose (개발·데모)
+cd infra && docker compose up -d
+
+# 서비스 헬스 확인
+curl http://localhost:8081/auth/health       # auth
+curl http://localhost:8084/content/projects  # content
+curl http://localhost:8085/contacts/health   # contact
+curl http://localhost:8086/blog/posts        # blog
+curl http://localhost:8087/analytics/stats   # analytics
+curl http://localhost:8083/notify/health     # notification
+
+# k6 부하 테스트
+k6 run infra/load-test/auth-direct.js        # auth 직접 (TPS 44.7)
+k6 run infra/load-test/auth-login.js         # gateway 경유 (TPS 42.9)
+
+# 관측성 UI
+open http://localhost:3000   # Grafana (admin/admin)
+open http://localhost:9091   # Prometheus
+open http://localhost:9411   # Zipkin
+```
+
+## 아키텍처 다이어그램
+
+```
+외부 요청
+    │
+    ▼
+[Nginx Gateway :8090]──────────────────────────────────────────
+    │                          │                               │
+    │ /api/auth/*              │ /api/content/*                │ /* (보호)
+    │ (auth_request →)         │ /api/blog/*                   │ (auth_request → /auth/verify)
+    ▼                          ▼                               ▼
+[auth-service :8081]   [content-service :8084]         [monolith :8080]
+[JWT 발급·검증]         [blog-service :8086]
+                        [analytics-service :8087]
+                                │
+    /api/contacts (POST) ───────▼
+[contact-service :8085]──────▶[notification-service :8083]
+    (Resilience4j 서킷브레이커)  (Telegram 알림)
+                                          │
+┌──────────────────────────────────────────────────────────────┐
+│ [PostgreSQL :5433]  auth│portfolio│contact│blog│analytics│  │
+│ [Zipkin :9411]      분산 트레이싱 (6서비스 ALL 등록)          │
+│ [Prometheus :9091]  메트릭 수집 (6서비스 ALL UP)             │
+│ [Grafana :3000]     대시보드 시각화                           │
+└──────────────────────────────────────────────────────────────┘
+```
+
+## 관측성 증거
+
+| 항목 | 수치 | 파일 |
+|---|---|---|
+| TPS (auth 직접) | 44.7 req/s | `infra/load-test/auth-direct.js` |
+| TPS (gateway 경유) | 42.9 req/s | `infra/load-test/auth-login.js` |
+| p95 응답시간 | 744ms (직접) / 1.29s (gateway) | — |
+| 에러율 | 0.00% | — |
+| Prometheus 타겟 | 6서비스 ALL UP | `platform/observability/prometheus.yml` |
+| Zipkin 분산 트레이싱 | contact→notification 3 spans 단일 trace | `infra/evidence/` |
+
+스크린샷: `infra/evidence/2026-08-08_16-45/`

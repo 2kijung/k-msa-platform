@@ -1,0 +1,55 @@
+# ============================================================================
+# service-template / application.yml — 새 서비스 설정 골격
+# ============================================================================
+# [사용법] 복사 후 ★ 표시된 곳만 변경
+
+server:
+  port: 8088   # ★ 기존 서비스와 겹치지 않는 포트 (8081~8087 사용 중)
+
+spring:
+  application:
+    name: my-service   # ★ 서비스 이름
+
+  datasource:
+    # ★ currentSchema, default_schema를 새 스키마 이름으로 변경
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kmsa}?currentSchema=myschema
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:kmsa}
+    password: ${DB_PASSWORD:kmsa1234}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: myschema   # ★ 이 스키마만 본다 (데이터 격리 핵심)
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: my-service   # ★ Grafana 필터링용 태그
+  # [관측성] Zipkin 분산 트레이싱 — 이 블록은 모든 서비스 동일
+  tracing:
+    sampling:
+      probability: 1.0   # 전량 샘플링 (운영은 0.1~0.5)
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:zipkin}:9411/api/v2/spans
+
+---
+# 테스트 프로필: H2 인메모리 (단위 테스트 전용)
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:mydb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

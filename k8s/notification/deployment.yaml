@@ -1,0 +1,81 @@
+# [MSA] notification-service Deployment + Service — K8s 독립 배포 단위
+# [왜] Docker Compose에서 K8s로 승격: Self-healing + Rolling Update + HPA 지원
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: kmsa
+  labels:
+    app: notification-service
+    tier: platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: 2kijung/kmsa-notification-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: DB_HOST
+              value: postgres-service
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: kmsa
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-password
+            - name: ZIPKIN_HOST
+              value: zipkin-service
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "400m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /notify/health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /notify/health
+              port: 8083
+            initialDelaySeconds: 20
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: kmsa
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

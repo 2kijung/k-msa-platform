@@ -1,0 +1,87 @@
+# k8s/monitoring/zipkin.yaml — Zipkin + Prometheus + Grafana K8s 배포
+# [왜/MSA] 관측성 스택도 K8s로 관리 → 서비스와 동일한 환경에서 트레이싱·메트릭 수집
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  namespace: kmsa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+        - name: zipkin
+          image: openzipkin/zipkin:3
+          ports:
+            - containerPort: 9411
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin-service
+  namespace: kmsa
+spec:
+  selector:
+    app: zipkin
+  ports:
+    - port: 9411
+      targetPort: 9411
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: kmsa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.54.1
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--web.enable-lifecycle'
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: kmsa
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+  type: ClusterIP

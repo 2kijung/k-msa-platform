@@ -1,0 +1,87 @@
+# ============================================================================
+# k8s/auth/deployment.yaml — auth-service K8s 배포
+# ============================================================================
+# [무엇을] auth-service를 K8s Deployment로 관리. Replica 2개 기본, HPA로 자동 확장.
+# [왜/MSA] K8s는 Docker Compose와 달리:
+#   - Self-Healing: Pod 죽으면 자동 재시작
+#   - Rolling Update: kubectl set image 한 줄로 무중단 교체
+#   - HPA: CPU 50% 초과 시 자동 복제본 추가
+# [왜 auth 먼저] 모든 서비스가 auth_request로 이 서비스를 호출 → 가장 먼저 Scale-out 대상.
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: kmsa
+  labels:
+    app: auth-service
+    tier: platform            # platform 계층(gateway·auth·notification)
+    phase: "1"                # Strangler Fig Phase 1에서 분리
+spec:
+  replicas: 2                 # [왜] 2개 기본 → auth는 단일 장애점이므로 최소 2개
+  selector:
+    matchLabels:
+      app: auth-service
+  strategy:
+    type: RollingUpdate       # [왜] 무중단 배포. 신버전 Pod 뜨면 구버전 Pod 종료.
+    rollingUpdate:
+      maxUnavailable: 1       # 업데이트 중 최대 1개 미사용 허용
+      maxSurge: 1             # 업데이트 중 최대 1개 초과 생성 허용
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: 2kijung/kmsa-auth-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_HOST
+              value: postgres-service
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: kmsa
+            # [보안] JWT 시크릿은 K8s Secret으로 주입 — 코드/이미지에 하드코딩 금지
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: jwt-secret
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kmsa-secrets
+                  key: db-password
+            - name: ZIPKIN_HOST
+              value: zipkin-service
+          resources:
+            requests:
+              cpu: "250m"     # [왜] HPA CPU 기준 = requests 기준. 너무 낮으면 항상 스케일아웃.
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # [왜/MSA] liveness: 무한루프 감지(재시작). readiness: 트래픽 수신 준비 확인.
+          livenessProbe:
+            httpGet:
+              path: /auth/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /auth/health
+              port: 8081
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
